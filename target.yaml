@@ -6,11 +6,11 @@ store_list:
       check_method: my_lib.store.paypay.search
 
 item_list:
-    - name: 30周年記念パック
+    - name: テストカード
       category: フリマ
       store:
           - name: PayPayフリマ
-            search_keyword: ポケットモンスター 30周年記念パック
+            search_keyword: ポケモンカード
             price:
                 - 1000
                 - 10000
