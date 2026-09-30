@@ -1,0 +1,254 @@
+#!/usr/bin/env python3
+# ruff: noqa: S101
+"""
+WebUI E2E テスト
+
+Playwright を使用して WebUI の E2E テストを実行します。
+"""
+
+import logging
+import pathlib
+
+import pytest
+from playwright.sync_api import expect
+
+# プロジェクトルートの reports/evidence/ に保存
+EVIDENCE_DIR = pathlib.Path(__file__).parent.parent.parent / "reports" / "evidence"
+
+# URL プレフィックス
+URL_PREFIX = "/price"
+PRICE_URL_TMPL = "http://{host}:{port}" + URL_PREFIX
+
+
+def price_url(host, port):
+    """価格履歴ページの URL を生成"""
+    return PRICE_URL_TMPL.format(host=host, port=port)
+
+
+@pytest.mark.e2e
+class TestWebuiE2E:
+    """WebUI E2E テスト"""
+
+    def test_price_page_loads(self, page, host, port):
+        """価格履歴ページ表示の E2E テスト
+
+        1. 価格履歴ページにアクセス
+        2. ページが正常にロードされることを確認
+        """
+        page.set_viewport_size({"width": 1920, "height": 1080})
+
+        # コンソールログをキャプチャ
+        console_errors = []
+        page.on(
+            "console",
+            lambda message: (
+                console_errors.append(message.text) if message.type == "error" else logging.info(message.text)
+            ),
+        )
+
+        # 価格履歴ページにアクセス
+        page.goto(price_url(host, port), wait_until="domcontentloaded")
+
+        # ページタイトルを確認
+        expect(page).to_have_title("Price Watch")
+
+        # スクリーンショットを保存
+        screenshot_path = EVIDENCE_DIR / "e2e_price_page.png"
+        screenshot_path.parent.mkdir(parents=True, exist_ok=True)
+        page.screenshot(path=str(screenshot_path), full_page=True)
+
+    def test_price_page_charts(self, page, host, port):
+        """価格履歴ページのチャート表示テスト
+
+        1. 価格履歴ページにアクセス
+        2. チャートが表示されることを確認
+        """
+        page.set_viewport_size({"width": 1920, "height": 1080})
+
+        page.goto(price_url(host, port), wait_until="domcontentloaded")
+
+        # Chart.js のキャンバス要素が存在することを確認
+        canvas_elements = page.locator("canvas")
+
+        # チャートが1つ以上存在（ローディング完了まで待機）
+        expect(canvas_elements.first).to_be_visible(timeout=30000)
+
+    def test_price_page_period_selector(self, page, host, port):
+        """期間セレクタのテスト
+
+        1. 価格履歴ページにアクセス
+        2. 期間セレクタが存在し、機能することを確認
+        """
+        page.set_viewport_size({"width": 1920, "height": 1080})
+
+        page.goto(price_url(host, port), wait_until="domcontentloaded")
+
+        # 期間セレクタのボタンが存在することを確認
+        period_button = page.locator("button:has-text('30日')")
+        expect(period_button).to_be_visible(timeout=10000)
+
+    def test_api_items(self, page, host, port):
+        """アイテム一覧 API のテスト"""
+        response = page.request.get(f"http://{host}:{port}{URL_PREFIX}/api/items")
+
+        # エラー時はレスポンスボディを表示（デバッグ用）
+        assert response.ok, f"API error: {response.status} - {response.text()}"
+        data = response.json()
+        assert "items" in data
+
+    def test_api_items_with_days(self, page, host, port):
+        """アイテム一覧 API（期間指定）のテスト"""
+        response = page.request.get(f"http://{host}:{port}{URL_PREFIX}/api/items?days=30")
+
+        # エラー時はレスポンスボディを表示（デバッグ用）
+        assert response.ok, f"API error: {response.status} - {response.text()}"
+        data = response.json()
+        assert "items" in data
+
+    def test_api_item_history(self, page, host, port):
+        """アイテム別価格履歴 API のテスト"""
+        # まずアイテム一覧を取得
+        items_response = page.request.get(f"http://{host}:{port}{URL_PREFIX}/api/items")
+        items_data = items_response.json()
+
+        if len(items_data.get("items", [])) == 0:
+            pytest.skip("No items available for history test")
+
+        # 最初のアイテムの最初のストアの item_key を取得
+        first_item = items_data["items"][0]
+        if "stores" not in first_item or len(first_item["stores"]) == 0:
+            pytest.skip("No stores available for history test")
+
+        item_key = first_item["stores"][0]["item_key"]
+        response = page.request.get(f"http://{host}:{port}{URL_PREFIX}/api/items/{item_key}/history")
+
+        assert response.ok
+        data = response.json()
+        assert "history" in data
+
+    def test_api_response_structure(self, page, host, port):
+        """API レスポンス構造のテスト（複数ストア対応）"""
+        response = page.request.get(f"http://{host}:{port}{URL_PREFIX}/api/items")
+
+        # エラー時はレスポンスボディを表示（デバッグ用）
+        assert response.ok, f"API error: {response.status} - {response.text()}"
+        data = response.json()
+        assert "items" in data
+        assert "store_definitions" in data
+
+        # アイテムがある場合、構造を確認
+        if len(data["items"]) > 0:
+            item = data["items"][0]
+            assert "name" in item
+            assert "stores" in item
+            assert "best_store" in item
+            assert "best_effective_price" in item
+
+            # ストアエントリの構造を確認
+            if len(item["stores"]) > 0:
+                store = item["stores"][0]
+                assert "item_key" in store
+                assert "store" in store
+                assert "current_price" in store
+                assert "effective_price" in store
+                assert "point_rate" in store
+
+    def test_price_page_no_js_errors(self, page, host, port):
+        """JavaScript エラーがないことを確認
+
+        1. 価格履歴ページにアクセス
+        2. JavaScript エラーがないことを確認
+        """
+        page.set_viewport_size({"width": 1920, "height": 1080})
+
+        js_errors = []
+        page.on("pageerror", lambda error: js_errors.append(str(error)))
+
+        page.goto(price_url(host, port), wait_until="domcontentloaded")
+
+        # ページのロード完了を待機
+        page.wait_for_load_state("load")
+
+        # JavaScript エラーがないこと
+        assert len(js_errors) == 0, f"JavaScript エラーが発生しました: {js_errors}"
+
+    def test_item_cards_displayed(self, page, host, port):
+        """アイテムカードが表示されることを確認
+
+        1. 価格履歴ページにアクセス
+        2. アイテムカードが表示されることを確認
+        """
+        page.set_viewport_size({"width": 1920, "height": 1080})
+
+        page.goto(price_url(host, port), wait_until="domcontentloaded")
+
+        # アイテムカードが存在することを確認（ローディング完了まで待機）
+        # ItemCard.tsx のクラス: bg-white rounded-lg shadow-md
+        item_cards = page.locator("div.bg-white.rounded-lg.shadow-md")
+        expect(item_cards.first).to_be_visible(timeout=30000)
+
+    def test_item_detail_page(self, page, host, port):
+        """アイテム詳細ページのテスト
+
+        1. 価格履歴ページにアクセス
+        2. アイテムカードをクリック
+        3. 詳細ページが表示されることを確認
+        4. 戻るボタンで一覧に戻る
+        """
+        page.set_viewport_size({"width": 1920, "height": 1080})
+
+        page.goto(price_url(host, port), wait_until="domcontentloaded")
+
+        # アイテムカードが表示されるまで待機
+        item_cards = page.locator("div.bg-white.rounded-lg.shadow-md.cursor-pointer")
+        expect(item_cards.first).to_be_visible(timeout=30000)
+
+        # 最初のアイテムカードをクリック
+        item_cards.first.click()
+
+        # 詳細ページが表示されることを確認（戻るボタンの存在で判断）
+        back_button = page.locator("button:has-text('一覧に戻る')")
+        expect(back_button).to_be_visible(timeout=10000)
+
+        # 価格統計セクションが表示されることを確認
+        stats_section = page.locator("text=価格統計")
+        expect(stats_section).to_be_visible(timeout=10000)
+
+        # イベント履歴セクションが表示されることを確認
+        # NOTE: "イベント履歴" は見出しと「イベント履歴はありません」の両方にマッチするため、
+        #       heading ロールで絞り込む
+        events_section = page.get_by_role("heading", name="イベント履歴")
+        expect(events_section).to_be_visible(timeout=10000)
+
+        # スクリーンショットを保存
+        screenshot_path = EVIDENCE_DIR / "e2e_item_detail_page.png"
+        screenshot_path.parent.mkdir(parents=True, exist_ok=True)
+        page.screenshot(path=str(screenshot_path), full_page=True)
+
+        # 戻るボタンをクリック
+        back_button.click()
+
+        # 一覧ページに戻ることを確認（期間セレクタの存在で判断）
+        period_button = page.locator("button:has-text('30日')")
+        expect(period_button).to_be_visible(timeout=10000)
+
+    def test_api_item_events(self, page, host, port):
+        """アイテム別イベント API のテスト"""
+        # まずアイテム一覧を取得
+        items_response = page.request.get(f"http://{host}:{port}{URL_PREFIX}/api/items")
+        items_data = items_response.json()
+
+        if len(items_data.get("items", [])) == 0:
+            pytest.skip("No items available for events test")
+
+        # 最初のアイテムの最初のストアの item_key を取得
+        first_item = items_data["items"][0]
+        if "stores" not in first_item or len(first_item["stores"]) == 0:
+            pytest.skip("No stores available for events test")
+
+        item_key = first_item["stores"][0]["item_key"]
+        response = page.request.get(f"http://{host}:{port}{URL_PREFIX}/api/items/{item_key}/events")
+
+        assert response.ok
+        data = response.json()
+        assert "events" in data

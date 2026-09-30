@@ -1,0 +1,17 @@
+category_list:
+    - フリマ
+
+store_list:
+    - name: PayPayフリマ
+      check_method: my_lib.store.paypay.search
+
+item_list:
+    - name: テストカード
+      category: フリマ
+      store:
+          - name: PayPayフリマ
+            search_keyword: ポケモンカード
+            price:
+                - 1000
+                - 10000
+            cond: NEW|LIKE_NEW
