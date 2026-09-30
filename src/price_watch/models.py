@@ -97,6 +97,8 @@ class CheckedItem:
     asin: str | None = None
     # 過去の価格（イベント判定用）
     old_price: int | None = None
+    # 商品タイトル（フリマ検索用）
+    title: str | None = None
 
     def is_success(self) -> bool:
         """クロール成功かどうかを返す."""

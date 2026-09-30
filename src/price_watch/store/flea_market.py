@@ -260,6 +260,7 @@ def check(
     result.price = cheapest.price
     result.stock = price_watch.models.StockStatus.IN_STOCK
     result.crawl_status = price_watch.models.CrawlStatus.SUCCESS
+    result.title = cheapest.title
 
     return result
 

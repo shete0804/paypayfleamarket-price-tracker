@@ -115,7 +115,12 @@ def format_watch_start(item: CheckedItem) -> str:
     prefix = format_item_prefix(item)
     if item.stock_as_int() == 1:
         price = item.price or 0
-        return f"{EMOJI_NEW} {prefix}: 監視開始 {price}{item.price_unit} (在庫あり)"
+        msg = f"{EMOJI_NEW} {prefix}: 監視開始 {price}{item.price_unit} (在庫あり)"
+        if item.title:
+            msg += f" / {item.title}"
+        if item.url:
+            msg += f" / {item.url}"
+        return msg
     return f"{EMOJI_NEW} {prefix}: 監視開始 (在庫なし)"
 
 
