@@ -11,7 +11,133 @@ item_list:
       store:
           - name: PayPayフリマ
             search_keyword: メガルカリオex MUR
-            price:
-                - 8000
-                - 10000
+            price: [8000, 10000]
+            cond: NEW|LIKE_NEW
+
+    - name: リーリエの決心 SAR メガブレイブ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: リーリエの決心 SAR
+            price: [15000, 20000]
+            cond: NEW|LIKE_NEW
+
+    - name: セレナSAR メガブレイブ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: セレナSAR
+            price: [18000, 25000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカードゲーム ハイクラスパック 30周年記念ボックス
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: ハイクラスパック 30周年
+            price: [20000, 35000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード シャイニースター V BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: シャイニースター
+            price: [8000, 15000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード レイジングサーフ BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: レイジングサーフ
+            price: [5000, 10000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード ソード BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: ソード BOX ポケモンカード
+            price: [8000, 15000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード シールド BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: シールド BOX ポケモンカード
+            price: [8000, 15000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード Vstarユニバース BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: Vstarユニバース
+            price: [15000, 25000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード スペースジャグラー BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: スペースジャグラー
+            price: [10000, 18000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード タイムゲイザー BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: タイムゲイザー
+            price: [10000, 18000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード パラダイムトリガー BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: パラダイムトリガー
+            price: [10000, 18000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード スカーレット BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: スカーレット BOX ポケモン
+            price: [6000, 12000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード バイオレット BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: バイオレット BOX ポケモン
+            price: [6000, 12000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード クリムゾンヘイズ BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: クリムゾンヘイズ
+            price: [8000, 15000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード オーバルチェイス BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: オーバルチェイス
+            price: [8000, 15000]
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード トリプレットビート BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: トリプレットビート
+            price: [8000, 15000]
             cond: NEW|LIKE_NEW
