@@ -1,29 +1,5 @@
 check:
-    interval_sec: 999999999  # Very large value to ensure single execution (won't trigger another check within 20m timeout)
-
-slack:
-    bot_token: "dummy-slack-token"
-    from: price-watch
-    info:
-        channel:
-            name: "#price"
-    error:
-        channel:
-            name: "#error"
-            id: C0123456789
-        interval_min: 60
-
-store:
-    amazon:
-        associate: XXXXXX-22
-        access_key: XXXXXXXXXXXXXXXXXXXX
-        secret_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        host: webservices.amazon.co.jp
-        region: us-west-2
-
-    yahoo:
-        client_id: XXXXXXXXXXXXXXXXXXXX
-        secret: XXXXXXXXXXXXXXXXXXXX
+    interval_sec: 999999999
 
 data:
     selenium: ./data
