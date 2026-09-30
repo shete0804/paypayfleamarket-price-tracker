@@ -83,6 +83,10 @@ class AppRunner:
         if self.app.debug_mode:
             return self._execute_debug_mode()
 
+        # 単一実行モード: interval_sec が非常に大きい場合
+        if self.app.config.check.interval_sec >= 999999999:
+            return self._execute_single_run()
+
         return self._execute_main_loop()
 
     def _execute_debug_mode(self) -> bool:
@@ -99,6 +103,21 @@ class AppRunner:
         self.app.shutdown()
 
         return self.processor.check_debug_results()
+
+    def _execute_single_run(self) -> bool:
+        """単一実行モード（スリープなし、実行後終了）.
+
+        Returns:
+            正常終了時 True
+        """
+        logging.info("[単一実行モード] 1回チェックして終了します")
+
+        self.app.metrics_manager.start_session()
+        self._do_work()
+        self.app.metrics_manager.end_session("normal")
+        self.app.shutdown()
+
+        return True
 
     def _execute_main_loop(self) -> bool:
         """メインループを実行.
