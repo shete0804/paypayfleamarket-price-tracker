@@ -1,143 +1,126 @@
-category_list:
-    - ポケモンカード
+﻿category_list:
+    - 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
 
 store_list:
-    - name: PayPayフリマ
+    - name: PayPay繝輔Μ繝・
       check_method: my_lib.store.paypay.search
 
 item_list:
-    - name: メガルカリオex MUR メガブレイブ
-      category: ポケモンカード
+    - name: 繝｡繧ｬ繝ｫ繧ｫ繝ｪ繧ｪex MUR 繝｡繧ｬ繝悶Ξ繧､繝・
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: メガルカリオex MUR
-            price: [8000, 10000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繝｡繧ｬ繝ｫ繧ｫ繝ｪ繧ｪex MUR
             cond: NEW|LIKE_NEW
 
-    - name: リーリエの決心 SAR メガブレイブ
-      category: ポケモンカード
+    - name: 繝ｪ繝ｼ繝ｪ繧ｨ縺ｮ豎ｺ蠢・SAR 繝｡繧ｬ繝悶Ξ繧､繝・
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: リーリエの決心 SAR
-            price: [15000, 20000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繝ｪ繝ｼ繝ｪ繧ｨ縺ｮ豎ｺ蠢・SAR
             cond: NEW|LIKE_NEW
 
-    - name: セレナSAR メガブレイブ
-      category: ポケモンカード
+    - name: 繧ｻ繝ｬ繝慨AR 繝｡繧ｬ繝悶Ξ繧､繝・
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: セレナSAR
-            price: [18000, 25000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繧ｻ繝ｬ繝慨AR
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカードゲーム ハイクラスパック 30周年記念ボックス
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝峨ご繝ｼ繝 繝上う繧ｯ繝ｩ繧ｹ繝代ャ繧ｯ 30蜻ｨ蟷ｴ險伜ｿｵ繝懊ャ繧ｯ繧ｹ
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: ハイクラスパック 30周年
-            price: [20000, 35000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繝上う繧ｯ繝ｩ繧ｹ繝代ャ繧ｯ 30蜻ｨ蟷ｴ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード シャイニースター V BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｷ繝｣繧､繝九・繧ｹ繧ｿ繝ｼ V BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: シャイニースター
-            price: [8000, 15000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繧ｷ繝｣繧､繝九・繧ｹ繧ｿ繝ｼ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード レイジングサーフ BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繝ｬ繧､繧ｸ繝ｳ繧ｰ繧ｵ繝ｼ繝・BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: レイジングサーフ
-            price: [5000, 10000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繝ｬ繧､繧ｸ繝ｳ繧ｰ繧ｵ繝ｼ繝・
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード ソード BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｽ繝ｼ繝・BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: ソード BOX ポケモンカード
-            price: [8000, 15000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繧ｽ繝ｼ繝・BOX 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード シールド BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｷ繝ｼ繝ｫ繝・BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: シールド BOX ポケモンカード
-            price: [8000, 15000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繧ｷ繝ｼ繝ｫ繝・BOX 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード Vstarユニバース BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・Vstar繝ｦ繝九ヰ繝ｼ繧ｹ BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: Vstarユニバース
-            price: [15000, 25000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: Vstar繝ｦ繝九ヰ繝ｼ繧ｹ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード スペースジャグラー BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｹ繝壹・繧ｹ繧ｸ繝｣繧ｰ繝ｩ繝ｼ BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: スペースジャグラー
-            price: [10000, 18000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繧ｹ繝壹・繧ｹ繧ｸ繝｣繧ｰ繝ｩ繝ｼ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード タイムゲイザー BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｿ繧､繝繧ｲ繧､繧ｶ繝ｼ BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: タイムゲイザー
-            price: [10000, 18000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繧ｿ繧､繝繧ｲ繧､繧ｶ繝ｼ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード パラダイムトリガー BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繝代Λ繝繧､繝繝医Μ繧ｬ繝ｼ BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: パラダイムトリガー
-            price: [10000, 18000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繝代Λ繝繧､繝繝医Μ繧ｬ繝ｼ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード スカーレット BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｹ繧ｫ繝ｼ繝ｬ繝・ヨ BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: スカーレット BOX ポケモン
-            price: [6000, 12000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繧ｹ繧ｫ繝ｼ繝ｬ繝・ヨ BOX 繝昴こ繝｢繝ｳ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード バイオレット BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繝舌う繧ｪ繝ｬ繝・ヨ BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: バイオレット BOX ポケモン
-            price: [6000, 12000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繝舌う繧ｪ繝ｬ繝・ヨ BOX 繝昴こ繝｢繝ｳ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード クリムゾンヘイズ BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｯ繝ｪ繝繧ｾ繝ｳ繝倥う繧ｺ BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: クリムゾンヘイズ
-            price: [8000, 15000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繧ｯ繝ｪ繝繧ｾ繝ｳ繝倥う繧ｺ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード オーバルチェイス BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｪ繝ｼ繝舌Ν繝√ぉ繧､繧ｹ BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: オーバルチェイス
-            price: [8000, 15000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繧ｪ繝ｼ繝舌Ν繝√ぉ繧､繧ｹ
             cond: NEW|LIKE_NEW
 
-    - name: ポケモンカード トリプレットビート BOX
-      category: ポケモンカード
+    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繝医Μ繝励Ξ繝・ヨ繝薙・繝・BOX
+      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
       store:
-          - name: PayPayフリマ
-            search_keyword: トリプレットビート
-            price: [8000, 15000]
+          - name: PayPay繝輔Μ繝・
+            search_keyword: 繝医Μ繝励Ξ繝・ヨ繝薙・繝・
             cond: NEW|LIKE_NEW
