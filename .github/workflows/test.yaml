@@ -54,6 +54,10 @@ jobs:
               run: |
                   uv sync
 
+            - name: Create reports directory
+              run: |
+                  mkdir -p reports
+
             - name: Run Tests
               run: uv run pytest --ignore=tests/integration --ignore=tests/e2e
 
