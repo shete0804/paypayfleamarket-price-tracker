@@ -1,5 +1,5 @@
 category_list:
-    - フリマ
+    - ポケモンカード
 
 store_list:
     - name: PayPayフリマ
@@ -7,11 +7,181 @@ store_list:
 
 item_list:
     - name: メガルカリオex MUR メガブレイブ
-      category: フリマ
+      category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガルカリオex MUR
             price:
                 - 8000
                 - 10000
+            cond: NEW|LIKE_NEW
+
+    - name: リーリエの決心 SAR メガブレイブ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: リーリエの決心 SAR
+            price:
+                - 12000
+                - 15000
+            cond: NEW|LIKE_NEW
+
+    - name: メガサーナイトex MUR メガシンフォニア
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガサーナイトex MUR
+            price:
+                - 7500
+                - 9000
+            cond: NEW|LIKE_NEW
+
+    - name: メガサーナイトex SAR メガシンフォニア
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガサーナイトex SAR
+            price:
+                - 14500
+                - 17000
+            cond: NEW|LIKE_NEW
+
+    - name: メガリザードンXex MUR インフェルノX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガリザードンXex MUR
+            price:
+                - 10000
+                - 12500
+            cond: NEW|LIKE_NEW
+
+    - name: メガリザードンXex SAR インフェルノX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガリザードンXex SAR
+            price:
+                - 17500
+                - 21000
+            cond: NEW|LIKE_NEW
+
+    - name: メガカイリューex MUR MEGAドリームex
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガカイリューex MUR
+            price:
+                - 9000
+                - 11000
+            cond: NEW|LIKE_NEW
+
+    - name: ピカチュウex SAR MEGAドリームex
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: ピカチュウex SAR
+            price:
+                - 21000
+                - 25000
+            cond: NEW|LIKE_NEW
+
+    - name: ロケット団のミュウツーex SAR MEGAドリームex
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: ロケット団のミュウツーex SAR
+            price:
+                - 27000
+                - 32000
+            cond: NEW|LIKE_NEW
+
+    - name: メガゲンガーex SAR MEGAドリームex
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガゲンガーex SAR
+            price:
+                - 19000
+                - 23000
+            cond: NEW|LIKE_NEW
+
+    - name: メガカイリューex SAR メガドリームex
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガカイリューex SAR
+            price:
+                - 16000
+                - 19000
+            cond: NEW|LIKE_NEW
+
+    - name: メガジガルデex MUR ムニキスゼロ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガジガルデex MUR
+            price:
+                - 10500
+                - 13000
+            cond: NEW|LIKE_NEW
+
+    - name: ニャースex SAR ムニキスゼロ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: ニャースex SAR
+            price:
+                - 8500
+                - 10500
+            cond: NEW|LIKE_NEW
+
+    - name: メイのはげまし SAR ムニキスゼロ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メイのはげまし SAR
+            price:
+                - 12500
+                - 15500
+            cond: NEW|LIKE_NEW
+
+    - name: メガゲッコウガex MUR ニンジャスピナー
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガゲッコウガex MUR
+            price:
+                - 8800
+                - 11000
+            cond: NEW|LIKE_NEW
+
+    - name: メガゲッコウガex SAR ニンジャスピナー
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガゲッコウガex SAR
+            price:
+                - 17000
+                - 20000
+            cond: NEW|LIKE_NEW
+
+    - name: メガダークライex MUR アビスアイ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガダークライex MUR
+            price:
+                - 10500
+                - 12500
+            cond: NEW|LIKE_NEW
+
+    - name: メガダークライex SAR アビスアイ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガダークライex SAR
+            price:
+                - 20500
+                - 24000
             cond: NEW|LIKE_NEW
