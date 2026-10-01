@@ -35,8 +35,7 @@ RUN --mount=type=cache,target=/var/lib/apt,sharing=locked \
     ./google-chrome-stable_142.0.7444.175-1_amd64.deb
 
 
-COPY font /usr/share/fonts/
-RUN fc-cache --force --verbose
+RUN if [ -d font ]; then cp -r font /usr/share/fonts/ && fc-cache --force --verbose; fi
 
 USER ubuntu
 
