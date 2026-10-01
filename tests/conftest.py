@@ -12,7 +12,6 @@ import unittest.mock
 
 import flask
 import flask.testing
-import my_lib.pytest_util
 import pytest
 
 import price_watch.managers.history
@@ -67,7 +66,7 @@ def _clear():
 def temp_data_dir(tmp_path: pathlib.Path) -> pathlib.Path:
     """一時データディレクトリを作成（ワーカー固有）"""
     # pytest-xdist 並列実行時はワーカーIDをディレクトリ名に付加
-    data_dir = my_lib.pytest_util.get_path(tmp_path / "data")
+    data_dir = tmp_path / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 
