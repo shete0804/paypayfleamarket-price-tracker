@@ -15,8 +15,8 @@ from typing import Any
 import my_lib.config
 import my_lib.notify.slack
 # import my_lib.store.amazon.config  # PayPay フリマ専用スクレイパーでは不要
-import my_lib.store.rakuten.config
-import my_lib.store.yahoo.config
+# import my_lib.store.rakuten.config  # PayPay フリマ専用では不要
+# import my_lib.store.yahoo.config  # PayPay フリマ専用では不要
 import my_lib.webapp.config
 
 import price_watch.const
@@ -164,22 +164,14 @@ class StoreConfig:
     """ストア設定"""
 
     # amazon_api: my_lib.store.amazon.config.AmazonApiConfig | None = None  # PayPay フリマ専用では不要
-    yahoo_api: my_lib.store.yahoo.config.YahooApiConfig | None = None
-    rakuten_api: my_lib.store.rakuten.config.RakutenApiConfig | None = None
+    # yahoo_api: my_lib.store.yahoo.config.YahooApiConfig | None = None  # PayPay フリマ専用では不要
+    # rakuten_api: my_lib.store.rakuten.config.RakutenApiConfig | None = None  # PayPay フリマ専用では不要
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> StoreConfig:
         """dict から StoreConfig を生成"""
-        # amazon_api = None  # PayPay フリマ専用では不要
-        # if "amazon" in data:
-        #     amazon_api = my_lib.store.amazon.config.AmazonApiConfig.parse(data["amazon"])
-        yahoo_api = None
-        if "yahoo" in data:
-            yahoo_api = my_lib.store.yahoo.config.YahooApiConfig.parse(data["yahoo"])
-        rakuten_api = None
-        if "rakuten" in data:
-            rakuten_api = my_lib.store.rakuten.config.RakutenApiConfig.parse(data["rakuten"])
-        return cls(yahoo_api=yahoo_api, rakuten_api=rakuten_api)
+        # PayPay フリマ専用では API 設定なし
+        return cls()
 
 
 @dataclass(frozen=True)
