@@ -159,12 +159,9 @@ class CheckConfig:
         )
 
 
+@dataclass(frozen=True)
 class StoreConfig:
     """ストア設定。PayPay フリマ専用スクレイパーでは API 設定なし"""
-
-    def __init__(self) -> None:
-        """デフォルトコンストラクタ"""
-        pass
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> StoreConfig:
