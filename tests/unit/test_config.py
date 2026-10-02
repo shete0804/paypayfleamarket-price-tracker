@@ -230,8 +230,9 @@ class TestStoreConfig:
 
     def test_default_instance(self) -> None:
         """デフォルトインスタンス"""
-        config = StoreConfig()
-        assert config is not None
+        # PayPay フリマ専用では parse() でのみ生成
+        result = StoreConfig.parse({})
+        assert result is not None
 
 
 class TestDataConfig:
