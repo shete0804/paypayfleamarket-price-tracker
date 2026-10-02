@@ -1,0 +1,56 @@
+name: Run Scraper
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    env:
+      TZ: "Asia/Tokyo"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set locale
+        run: |
+          sudo locale-gen ja_JP.UTF-8
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Dependencies
+        run: uv sync
+
+      - name: Run Price Watch (Dry Run)
+        run: |
+          uv run price-watch \
+            -c config.example.yaml \
+            -t target.yaml \
+            --timeout 60 \
+          2>&1 | tee scraper-output.log || true
+
+      - name: Show Output
+        run: |
+          echo "=== Scraper Output ==="
+          cat scraper-output.log
+
+      - name: Upload Output
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scraper-output
+          path: scraper-output.log
