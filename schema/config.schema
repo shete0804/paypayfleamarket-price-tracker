@@ -172,5 +172,5 @@
             }
         }
     },
-    "required": ["webapp"]
+    "required": ["webapp", "edit"]
 }
