@@ -205,31 +205,33 @@ class TestCheckConfig:
 class TestStoreConfig:
     """StoreConfig のテスト"""
 
-    def test_parse_with_amazon(self) -> None:
-        """Amazon 設定あり"""
-        data = {
-            "amazon": {
-                "associate": "test-22",
-                "access_key": "ACCESSKEY",
-                "secret_key": "SECRETKEY",
-                "host": "webservices.amazon.co.jp",
-                "region": "us-west-2",
-            }
-        }
-        result = StoreConfig.parse(data)
-        assert result.amazon_api is not None
-        assert result.amazon_api.associate == "test-22"
+    # PayPay フリマ専用スクレイパーでは Amazon API は不要
+    # def test_parse_with_amazon(self) -> None:
+    #     """Amazon 設定あり"""
+    #     data = {
+    #         "amazon": {
+    #             "associate": "test-22",
+    #             "access_key": "ACCESSKEY",
+    #             "secret_key": "SECRETKEY",
+    #             "host": "webservices.amazon.co.jp",
+    #             "region": "us-west-2",
+    #         }
+    #     }
+    #     result = StoreConfig.parse(data)
+    #     assert result.amazon_api is not None
+    #     assert result.amazon_api.associate == "test-22"
 
-    def test_parse_without_amazon(self) -> None:
-        """Amazon 設定なし"""
+    def test_parse_empty(self) -> None:
+        """空の設定（PayPay フリマ専用では API 設定なし）"""
         data: dict[str, str] = {}
         result = StoreConfig.parse(data)
-        assert result.amazon_api is None
+        # PayPay フリマ専用では API 設定がない
+        assert result is not None
 
     def test_default_instance(self) -> None:
         """デフォルトインスタンス"""
         config = StoreConfig()
-        assert config.amazon_api is None
+        assert config is not None
 
 
 class TestDataConfig:
@@ -437,7 +439,7 @@ class TestAppConfig:
         }
         result = AppConfig.parse(data)
         assert result.check.interval_sec == 1800
-        assert result.store.amazon_api is None
+        # assert result.store.amazon_api is None  # PayPay フリマ専用では amazon_api フィールド削除
         assert result.font is None
         assert result.edit.password_hash.startswith("$argon2id$")
 
@@ -452,23 +454,24 @@ class TestAppConfig:
         assert result.font is not None
         assert result.font.path == pathlib.Path("/fonts")
 
-    def test_parse_with_store(self) -> None:
-        """ストア設定あり"""
-        data = {
-            "webapp": {"static_dir_path": "frontend/dist"},
-            "edit": {"password_hash": "$argon2id$v=19$m=65536,t=3,p=4$test$hash"},
-            "store": {
-                "amazon": {
-                    "associate": "test-22",
-                    "access_key": "key",
-                    "secret_key": "secret",
-                    "host": "webservices.amazon.co.jp",
-                    "region": "us-west-2",
-                }
-            },
-        }
-        result = AppConfig.parse(data)
-        assert result.store.amazon_api is not None
+    # PayPay フリマ専用では Amazon API テストは不要
+    # def test_parse_with_store(self) -> None:
+    #     """ストア設定あり"""
+    #     data = {
+    #         "webapp": {"static_dir_path": "frontend/dist"},
+    #         "edit": {"password_hash": "$argon2id$v=19$m=65536,t=3,p=4$test$hash"},
+    #         "store": {
+    #             "amazon": {
+    #                 "associate": "test-22",
+    #                 "access_key": "key",
+    #                 "secret_key": "secret",
+    #                 "host": "webservices.amazon.co.jp",
+    #                 "region": "us-west-2",
+    #             }
+    #         },
+    #     }
+    #     result = AppConfig.parse(data)
+    #     assert result.store.amazon_api is not None
 
 
 class TestLoad:
