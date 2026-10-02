@@ -59,7 +59,8 @@ jobs:
               thumb: ./data/thumb
               metrics: ./data/metrics
               cache: ./data/cache
-          webapp: {}
+          webapp:
+              static_dir_path: ./static
           target:
               define: target.yaml
           liveness:
