@@ -34,22 +34,12 @@ def env_mock():
 
 @pytest.fixture(scope="session", autouse=True)
 def slack_mock():
-    """Slack API のモック"""
-    with (
-        unittest.mock.patch(
-            "my_lib.notify.slack.slack_sdk.web.client.WebClient.chat_postMessage",
-            return_value={"ok": True, "ts": "1234567890.123456"},
-        ),
-        unittest.mock.patch(
-            "my_lib.notify.slack.slack_sdk.web.client.WebClient.files_upload_v2",
-            return_value={"ok": True, "files": [{"id": "test_file_id"}]},
-        ),
-        unittest.mock.patch(
-            "my_lib.notify.slack.slack_sdk.web.client.WebClient.files_getUploadURLExternal",
-            return_value={"ok": True, "upload_url": "https://example.com"},
-        ) as fixture,
-    ):
-        yield fixture
+    """Slack API のモック - 簡略版"""
+    with unittest.mock.patch("my_lib.notify.slack.slack_sdk.web.client.WebClient") as mock_client:
+        mock_client.return_value.chat_postMessage.return_value = {"ok": True}
+        mock_client.return_value.files_upload_v2.return_value = {"ok": True}
+        mock_client.return_value.files_getUploadURLExternal.return_value = {"ok": True}
+        yield mock_client
 
 
 @pytest.fixture(autouse=True)
