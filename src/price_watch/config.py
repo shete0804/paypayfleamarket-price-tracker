@@ -368,7 +368,8 @@ class AppConfig:
             slack = my_lib.notify.slack.SlackConfig.parse(data["slack"])
 
         # Store 設定
-        store = StoreConfig.parse(data.get("store", {}))
+        store_data = data.get("store")
+        store = StoreConfig.parse(store_data if isinstance(store_data, dict) else {})
 
         # Data 設定
         data_config = DataConfig.parse(data.get("data", {}))
