@@ -159,12 +159,11 @@ class CheckConfig:
         )
 
 
-@dataclass(frozen=True)
 class StoreConfig:
-    """ストア設定"""
+    """ストア設定。PayPay フリマ専用スクレイパーでは API 設定なし"""
 
-    # PayPay フリマ専用では API 設定なし。ダミーフィールドで dataclass の init を有効化
-    _placeholder: str = ""
+    def __init__(self) -> None:
+        """デフォルトコンストラクタ"""
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> StoreConfig:
