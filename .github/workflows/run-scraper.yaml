@@ -35,12 +35,43 @@ jobs:
       - name: Install Dependencies
         run: uv sync
 
+      - name: Generate Config
+        run: |
+          cat > /tmp/config.yaml << 'EOF'
+          check:
+              interval_sec: 1800
+          slack:
+              bot_token: "dummy-token-for-testing"
+              from: price-watch
+              info:
+                  channel:
+                      name: "#price"
+              error:
+                  channel:
+                      name: "#error"
+          data:
+              selenium: ./data
+              dump: ./data/debug
+              price: ./data/price
+              thumb: ./data/thumb
+              metrics: ./data/metrics
+              cache: ./data/cache
+          target:
+              define: target.yaml
+          liveness:
+              file:
+                  crawler: /tmp/healthz
+              interval_sec: 300
+          edit:
+              password_hash: "$argon2id$v=19$m=65536,t=3,p=4$G3sQ/+Jkh/ufAWCJDUTaPw$8wl44G3QrQysWT9mIDLD3bf0fLn0o/RO1EnYVVovyLs"
+          EOF
+
       - name: Run Price Watch (Dry Run)
         run: |
           uv run price-watch \
-            -c config.example.yaml \
+            -c /tmp/config.yaml \
             -t target.yaml \
-            --timeout 60 \
+            -D \
           2>&1 | tee scraper-output.log || true
 
       - name: Show Output
