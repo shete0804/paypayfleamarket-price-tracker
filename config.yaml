@@ -4,6 +4,8 @@ check:
 slack:
     bot_token: xoxb-dummy-token
 
+store:
+
 data:
     selenium: ./data
     dump: ./data/debug
