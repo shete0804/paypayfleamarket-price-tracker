@@ -11,7 +11,6 @@ import my_lib.store.flea_market
 import my_lib.store.mercari.search
 import my_lib.store.paypay.search
 import my_lib.store.rakuma.search
-import selenium.webdriver.support.wait
 
 import price_watch.affiliate
 import price_watch.history
@@ -22,7 +21,7 @@ import price_watch.target
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from selenium.webdriver.remote.webdriver import WebDriver
+    from my_lib.browser import Page
 
     from price_watch.config import AppConfig
     from price_watch.target import ResolvedItem
@@ -42,6 +41,39 @@ _STORE_SEARCH_FUNCS: dict[
     price_watch.target.CheckMethod.RAKUMA_SEARCH: (my_lib.store.rakuma.search.search, "ラクマ検索"),
     price_watch.target.CheckMethod.PAYPAY_SEARCH: (my_lib.store.paypay.search.search, "PayPay検索"),
 }
+
+# ストアごとのウォームアップ関数
+_STORE_WARMUP_FUNCS: dict[
+    price_watch.target.CheckMethod,
+    Callable[..., bool],
+] = {
+    price_watch.target.CheckMethod.MERCARI_SEARCH: my_lib.store.mercari.search.warmup,
+    price_watch.target.CheckMethod.RAKUMA_SEARCH: my_lib.store.rakuma.search.warmup,
+    price_watch.target.CheckMethod.PAYPAY_SEARCH: my_lib.store.paypay.search.warmup,
+}
+
+
+def warmup(
+    page: Page,
+    check_method: price_watch.target.CheckMethod,
+) -> bool:
+    """指定されたフリマストアのウォームアップを実行.
+
+    Google検索経由でフリマサイトにアクセスし、bot検出を回避する。
+
+    Args:
+        page: ブラウザページ
+        check_method: チェックメソッド（フリマストア種別）
+
+    Returns:
+        ウォームアップが成功した場合 True
+    """
+    warmup_func = _STORE_WARMUP_FUNCS.get(check_method)
+    if warmup_func is None:
+        logging.warning("ウォームアップ関数が見つかりません: %s", check_method)
+        return False
+
+    return warmup_func(page)
 
 
 def _parse_cond(cond_str: str | None) -> list[my_lib.store.flea_market.ItemCondition] | None:
@@ -103,14 +135,14 @@ def _build_search_condition(item: ResolvedItem) -> my_lib.store.flea_market.Sear
             price_max = item.price_range[1]
 
     # 商品状態
-    item_conditions = _parse_cond(item.cond)
+    conditions = _parse_cond(item.cond)
 
     return my_lib.store.flea_market.SearchCondition(
         keyword=keyword,
         exclude_keyword=item.exclude_keyword,
         price_min=price_min,
         price_max=price_max,
-        item_conditions=item_conditions,
+        condition=conditions,
     )
 
 
@@ -131,8 +163,8 @@ def _build_search_cond_json(condition: my_lib.store.flea_market.SearchCondition)
         data["price_min"] = condition.price_min
     if condition.price_max is not None:
         data["price_max"] = condition.price_max
-    if condition.item_conditions:
-        data["cond"] = [c.value for c in condition.item_conditions]
+    if condition.condition:
+        data["cond"] = [c.value for c in condition.condition]
 
     return json.dumps(data, sort_keys=True, ensure_ascii=False) if data else ""
 
@@ -147,21 +179,19 @@ def _get_store_label(item: ResolvedItem) -> str:
 
 def check(
     config: AppConfig,
-    driver: WebDriver,
+    page: Page,
     item: ResolvedItem,
 ) -> price_watch.models.CheckedItem:
     """フリマ検索で最安値商品を取得.
 
     Args:
         config: アプリケーション設定
-        driver: WebDriver インスタンス
+        page: ブラウザページ
         item: 監視対象アイテム
 
     Returns:
         チェック結果（CheckedItem）
     """
-    wait = selenium.webdriver.support.wait.WebDriverWait(driver, 10)
-
     label = _get_store_label(item)
 
     # 結果を格納する CheckedItem を作成
@@ -185,8 +215,7 @@ def check(
     # 20件以上取得する場合は scroll_to_load=True
     scroll_to_load = MAX_SEARCH_RESULTS > 20
     results = search_func(
-        driver,
-        wait,
+        page,
         condition,
         max_items=MAX_SEARCH_RESULTS,
         scroll_to_load=scroll_to_load,
@@ -226,7 +255,7 @@ def check(
     filtered_results = [
         r
         for r in filtered_results
-        if price_watch.store.search_filter.matches_all_keywords(r.title, condition.keyword)
+        if price_watch.store.search_filter.matches_all_keywords(r.name, condition.keyword)
     ]
     if len(filtered_results) < before_keyword_filter:
         logging.info(
@@ -252,7 +281,7 @@ def check(
         item.name,
         len(filtered_results),
         f"{cheapest.price:,}",
-        cheapest.title,
+        cheapest.name,
     )
 
     # 結果を設定（アフィリエイトID付与）
@@ -260,7 +289,6 @@ def check(
     result.price = cheapest.price
     result.stock = price_watch.models.StockStatus.IN_STOCK
     result.crawl_status = price_watch.models.CrawlStatus.SUCCESS
-    result.title = cheapest.title
 
     return result
 

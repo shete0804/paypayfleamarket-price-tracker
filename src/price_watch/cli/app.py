@@ -27,6 +27,8 @@ import my_lib.logger
 import my_lib.webapp.event
 
 import price_watch.app_context
+import price_watch.chart_image
+import price_watch.chart_image_worker
 import price_watch.const
 import price_watch.managers.history
 import price_watch.notify
@@ -51,6 +53,7 @@ class AppRunner:
     app: PriceWatchApp
     _processor: price_watch.processor.ItemProcessor | None = field(default=None, init=False)
     _loop: int = field(default=0, init=False)
+    _last_chart_generation_time: float = field(default=0.0, init=False)
 
     @property
     def processor(self) -> price_watch.processor.ItemProcessor:
@@ -73,7 +76,7 @@ class AppRunner:
             self.app.initialize()
 
             # ブラウザを起動
-            self.app.browser_manager.ensure_driver()
+            self.app.browser_manager.ensure_browser()
 
         except Exception:
             logging.exception("Failed to initialize")
@@ -82,10 +85,6 @@ class AppRunner:
         # デバッグモード: 1回だけ実行して終了
         if self.app.debug_mode:
             return self._execute_debug_mode()
-
-        # 単一実行モード: interval_sec が非常に大きい場合
-        if self.app.config.check.interval_sec >= 999999999:
-            return self._execute_single_run()
 
         return self._execute_main_loop()
 
@@ -104,21 +103,6 @@ class AppRunner:
 
         return self.processor.check_debug_results()
 
-    def _execute_single_run(self) -> bool:
-        """単一実行モード（スリープなし、実行後終了）.
-
-        Returns:
-            正常終了時 True
-        """
-        logging.info("[単一実行モード] 1回チェックして終了します")
-
-        self.app.metrics_manager.start_session()
-        self._do_work()
-        self.app.metrics_manager.end_session("normal")
-        self.app.shutdown()
-
-        return True
-
     def _execute_main_loop(self) -> bool:
         """メインループを実行.
 
@@ -127,10 +111,17 @@ class AppRunner:
         """
         self.app.metrics_manager.start_session()
 
+        # 起動直後に DB 内の既存データからチャート画像を生成（巡回完了を待たない）
+        self._generate_chart_images()
+
         while not self.app.should_terminate:
             start_time = time.time()
 
             self._do_work()
+
+            # 巡回完了後、チャート画像生成が必要なら実行
+            if self._should_generate_charts():
+                self._generate_chart_images()
 
             # 作業終了時刻を記録（スリープ前）
             self.app.metrics_manager.record_work_ended(time.time())
@@ -158,6 +149,101 @@ class AppRunner:
         self.app.shutdown()
 
         return True
+
+    def _should_generate_charts(self) -> bool:
+        """チャート画像生成が必要かどうかを判定.
+
+        3時間経過していれば True を返す。
+        """
+        now = time.time()
+        elapsed = now - self._last_chart_generation_time
+        return elapsed >= price_watch.const.CHART_GENERATION_INTERVAL_SEC
+
+    def _generate_chart_images(self) -> None:
+        """全アイテムのチャート画像を ChartImageWorker 経由で生成."""
+        logging.info("Starting background chart image generation...")
+
+        worker = price_watch.chart_image_worker.get_worker()
+        if worker is None:
+            logging.warning("ChartImageWorker not initialized, skipping chart generation")
+            return
+
+        # 通貨換算レートを構築
+        currency_rates: dict[str, float] = {}
+        if self.app.config.check.currency:
+            for cr in self.app.config.check.currency:
+                currency_rates[cr.label] = cr.rate
+
+        try:
+            # 全アイテムのチャートデータを収集
+            chart_data_list = self._collect_chart_data(currency_rates)
+
+            # ワーカーにバッチ投入
+            added = worker.submit_batch(
+                chart_data_list,
+                should_terminate=lambda: self.app.should_terminate,
+            )
+            logging.info("Submitted %d chart generation requests to worker", added)
+
+            # 実際に生成リクエストがあった場合のみ生成時刻を更新
+            # 0件の場合（全キャッシュ有効）は更新しない。
+            # キャッシュが期限切れになった後の次回チェックで再生成を実行するため。
+            if added > 0:
+                self._last_chart_generation_time = time.time()
+        except Exception:
+            logging.exception("Failed to submit chart generation requests")
+
+    def _collect_chart_data(
+        self, currency_rates: dict[str, float]
+    ) -> list[price_watch.chart_image.ChartData]:
+        """全アイテムのチャートデータを収集."""
+        db_path = self.app.config.data.price
+        target_config = self.app.config_manager.target
+
+        # ストア定義を取得（色情報用）
+        store_definitions = [
+            price_watch.chart_image.StoreDefinition(name=s.name, color=s.color) for s in target_config.stores
+        ]
+
+        # 全アイテムを取得
+        manager = price_watch.managers.history.HistoryManager.create(db_path)
+        manager.initialize()
+        all_items = manager.get_all_items()
+
+        if not all_items:
+            return []
+
+        # 商品名でグループ化して重複を除去
+        unique_names: set[str] = set()
+        chart_data_list: list[price_watch.chart_image.ChartData] = []
+
+        for item in all_items:
+            if item.name in unique_names:
+                continue
+            unique_names.add(item.name)
+
+            # アイテムデータを取得
+            result = price_watch.chart_image._get_item_data_from_db(
+                item.item_key, db_path, target_config, currency_rates
+            )
+            if result[0] is None:
+                continue
+
+            item_name: str = result[0]
+            stores_data: list[price_watch.chart_image.StoreChartData] = result[1]
+
+            if not stores_data:
+                continue
+
+            chart_data = price_watch.chart_image.ChartData(
+                item_name=item_name,
+                item_key=item.item_key,
+                stores=stores_data,
+                store_definitions=store_definitions,
+            )
+            chart_data_list.append(chart_data)
+
+        return chart_data_list
 
     def _do_work(self) -> None:
         """監視処理を実行."""

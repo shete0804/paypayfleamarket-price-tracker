@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """API エンドポイント."""
 
+import io
+import json
 import logging
 import pathlib
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import flask
 from flask_pydantic import validate
+from PIL import Image, ImageDraw
 
+import price_watch.chart_image
+import price_watch.chart_image_worker
 import price_watch.event
 import price_watch.managers.history
 import price_watch.metrics
@@ -18,6 +24,51 @@ import price_watch.webapi.cache
 import price_watch.webapi.metrics
 import price_watch.webapi.ogp
 import price_watch.webapi.schemas
+
+if TYPE_CHECKING:
+    from price_watch.target import ResolvedItem
+
+# チャート画像生成のタイムアウト（秒）
+CHART_GENERATION_TIMEOUT_SEC = 120.0
+
+# プレースホルダー画像のキャッシュ時間（秒）- 短くしてリトライを促す
+PLACEHOLDER_CACHE_SEC = 10
+
+
+def _generate_placeholder_image() -> io.BytesIO:
+    """チャート生成中のプレースホルダー画像を生成.
+
+    Returns:
+        PNG画像のバイトストリーム
+    """
+    # チャートと同じサイズで作成
+    width = 800
+    height = 320
+    img = Image.new("RGB", (width, height), color=(248, 250, 252))  # bg-gray-50
+
+    draw = ImageDraw.Draw(img)
+
+    # 枠線を描画
+    draw.rectangle([(0, 0), (width - 1, height - 1)], outline=(229, 231, 235))  # gray-200
+
+    # テキストを描画（フォント指定なしでデフォルトフォント使用）
+    text = "Loading..."
+    # テキストのバウンディングボックスを取得
+    bbox = draw.textbbox((0, 0), text)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+
+    # 中央に配置
+    x = (width - text_width) // 2
+    y = (height - text_height) // 2
+    draw.text((x, y), text, fill=(156, 163, 175))  # gray-400
+
+    # PNG形式でバイトストリームに保存
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+    return buffer
+
 
 blueprint = flask.Blueprint("page", __name__)
 
@@ -33,6 +84,123 @@ class ProcessedStoreData:
 # キャッシュ関連は cache モジュールに移動
 # 互換性のためのエイリアス
 init_file_paths = price_watch.webapi.cache.init_file_paths
+
+# cond 文字列から整数リストへのマッピング（フリマ用）
+_FLEA_MARKET_COND_MAP: dict[str, int] = {
+    "NEW": 1,
+    "LIKE_NEW": 2,
+    "GOOD": 3,
+    "FAIR": 4,
+    "POOR": 5,
+    "BAD": 6,
+}
+
+
+def _build_search_cond_for_flea_market(item: "ResolvedItem") -> str:
+    """フリマ系ストア用の search_cond JSON 文字列を生成.
+
+    Args:
+        item: 監視対象アイテム
+
+    Returns:
+        search_cond JSON 文字列
+    """
+    data: dict[str, object] = {}
+
+    if item.exclude_keyword:
+        data["exclude"] = item.exclude_keyword
+
+    if item.price_range:
+        if len(item.price_range) >= 1 and item.price_range[0] is not None:
+            data["price_min"] = item.price_range[0]
+        if len(item.price_range) >= 2 and item.price_range[1] is not None:
+            data["price_max"] = item.price_range[1]
+
+    # cond 文字列を整数リストに変換
+    if item.cond:
+        cond_values = []
+        for cond_name in item.cond.split("|"):
+            cond_name = cond_name.strip().upper()
+            if cond_name in _FLEA_MARKET_COND_MAP:
+                cond_values.append(_FLEA_MARKET_COND_MAP[cond_name])
+        if cond_values:
+            data["cond"] = cond_values
+    else:
+        # デフォルト: NEW, LIKE_NEW
+        data["cond"] = [1, 2]
+
+    return json.dumps(data, sort_keys=True, ensure_ascii=False) if data else ""
+
+
+def _build_search_cond_for_yahoo(item: "ResolvedItem") -> str:
+    """Yahoo ストア用の search_cond JSON 文字列を生成.
+
+    Args:
+        item: 監視対象アイテム
+
+    Returns:
+        search_cond JSON 文字列
+    """
+    data: dict[str, object] = {}
+
+    if item.jan_code:
+        data["jan"] = item.jan_code
+
+    if item.price_range:
+        if len(item.price_range) >= 1 and item.price_range[0] is not None:
+            data["price_min"] = item.price_range[0]
+        if len(item.price_range) >= 2 and item.price_range[1] is not None:
+            data["price_max"] = item.price_range[1]
+
+    # cond: デフォルト（"new"）以外の場合のみ含める
+    if item.cond and item.cond.strip().lower() == "used":
+        data["cond"] = "used"
+
+    return json.dumps(data, sort_keys=True, ensure_ascii=False) if data else ""
+
+
+def _build_search_cond_for_rakuten(item: "ResolvedItem") -> str:
+    """楽天ストア用の search_cond JSON 文字列を生成.
+
+    Args:
+        item: 監視対象アイテム
+
+    Returns:
+        search_cond JSON 文字列
+    """
+    data: dict[str, object] = {}
+
+    if item.exclude_keyword:
+        data["exclude_keyword"] = item.exclude_keyword
+
+    if item.price_range:
+        if len(item.price_range) >= 1 and item.price_range[0] is not None:
+            data["price_min"] = item.price_range[0]
+        if len(item.price_range) >= 2 and item.price_range[1] is not None:
+            data["price_max"] = item.price_range[1]
+
+    return json.dumps(data, sort_keys=True, ensure_ascii=False) if data else ""
+
+
+def _build_search_cond_for_item(item: "ResolvedItem") -> str:
+    """ResolvedItem から search_cond JSON 文字列を生成.
+
+    ストアタイプに応じて適切なロジックを使用します。
+
+    Args:
+        item: 監視対象アイテム
+
+    Returns:
+        search_cond JSON 文字列（条件がない場合は空文字列）
+    """
+    if item.check_method == price_watch.target.CheckMethod.YAHOO_SEARCH:
+        return _build_search_cond_for_yahoo(item)
+    if item.check_method == price_watch.target.CheckMethod.RAKUTEN_SEARCH:
+        return _build_search_cond_for_rakuten(item)
+    if item.check_method in price_watch.target.FLEA_MARKET_CHECK_METHODS:
+        return _build_search_cond_for_flea_market(item)
+    # その他の検索系ストア（将来追加される可能性）
+    return ""
 
 
 def _parse_days(days_str: str | None) -> int | None:
@@ -58,12 +226,17 @@ def _get_target_item_keys(target_config: price_watch.target.TargetConfig | None)
         return set()
 
     for item in resolved_items:
-        # 検索系ストアの場合は keyword から item_key を生成
+        # 検索系ストアの場合は keyword と search_cond から item_key を生成
         if item.check_method in price_watch.target.SEARCH_CHECK_METHODS:
-            keyword = item.search_keyword or item.name
+            # Yahoo は JANコードが指定されていれば JANコードを search_keyword として使用
+            if item.check_method == price_watch.target.CheckMethod.YAHOO_SEARCH and item.jan_code:
+                keyword = item.jan_code
+            else:
+                keyword = item.search_keyword or item.name
+            search_cond = _build_search_cond_for_item(item)
             keys.add(
                 price_watch.managers.history.generate_item_key(
-                    search_keyword=keyword, search_cond="", store_name=item.store
+                    search_keyword=keyword, search_cond=search_cond, store_name=item.store
                 )
             )
         else:
@@ -327,6 +500,8 @@ def _process_item(
     target_config: price_watch.target.TargetConfig | None,
     *,
     include_history: bool = True,
+    all_latest: dict[int, price_watch.models.LatestPriceRecord] | None = None,
+    all_stats: dict[int, price_watch.models.ItemStats] | None = None,
 ) -> ProcessedStoreData | None:
     """1つのアイテムを処理してストアデータを構築.
 
@@ -335,6 +510,8 @@ def _process_item(
         days: 期間（日数）
         target_config: ターゲット設定
         include_history: 履歴を含めるかどうか（軽量API用にFalseを指定）
+        all_latest: 一括取得した最新価格（パフォーマンス最適化用）
+        all_stats: 一括取得した統計情報（パフォーマンス最適化用）
     """
     history = price_watch.webapi.cache.get_history_manager()
 
@@ -342,15 +519,21 @@ def _process_item(
     point_rate = _get_point_rate(target_config, item.store)
     price_unit = _get_price_unit(target_config, item.store)
 
-    # 最新価格を取得
-    latest = history.get_latest(item.id)
+    # 最新価格を取得（一括取得データがあれば使用）
+    latest = all_latest.get(item.id) if all_latest is not None else history.get_latest(item.id)
+
     if not latest:
         # 履歴がないアイテムも表示（在庫なしとして）
         store_entry = _build_store_entry_without_history_from_record(item, point_rate, price_unit)
         return ProcessedStoreData(store_entry=store_entry, thumb_url=item.thumb_url)
 
-    # 統計情報を取得
-    stats = history.get_stats(item.id, days)
+    # 統計情報を取得（一括取得データがあれば使用）
+    if all_stats is not None:
+        stats = all_stats.get(
+            item.id, price_watch.models.ItemStats(lowest_price=None, highest_price=None, data_count=0)
+        )
+    else:
+        stats = history.get_stats(item.id, days)
 
     # 価格履歴を取得（include_history=False の場合はスキップ）
     hist: list[price_watch.models.PriceRecord] = []
@@ -372,6 +555,8 @@ def _collect_stores_for_name(
     target_config: price_watch.target.TargetConfig | None,
     *,
     include_history: bool = True,
+    all_latest: dict[int, price_watch.models.LatestPriceRecord] | None = None,
+    all_stats: dict[int, price_watch.models.ItemStats] | None = None,
 ) -> list[ProcessedStoreData]:
     """指定されたアイテム名に対応する全ストアのデータを収集."""
     store_data_list: list[ProcessedStoreData] = []
@@ -380,7 +565,14 @@ def _collect_stores_for_name(
             continue
         if target_item_keys and item.item_key not in target_item_keys:
             continue
-        store_data = _process_item(item, days, target_config, include_history=include_history)
+        store_data = _process_item(
+            item,
+            days,
+            target_config,
+            include_history=include_history,
+            all_latest=all_latest,
+            all_stats=all_stats,
+        )
         if store_data:
             store_data_list.append(store_data)
     return store_data_list
@@ -393,6 +585,8 @@ def _group_items_by_name(
     target_config: price_watch.target.TargetConfig | None,
     *,
     include_history: bool = True,
+    all_latest: dict[int, price_watch.models.LatestPriceRecord] | None = None,
+    all_stats: dict[int, price_watch.models.ItemStats] | None = None,
 ) -> dict[str, list[ProcessedStoreData]]:
     """アイテムを名前でグルーピング.
 
@@ -402,6 +596,8 @@ def _group_items_by_name(
         days: 期間（日数）
         target_config: ターゲット設定
         include_history: 履歴を含めるかどうか（軽量API用にFalseを指定）
+        all_latest: 一括取得した最新価格（パフォーマンス最適化用）
+        all_stats: 一括取得した統計情報（パフォーマンス最適化用）
     """
     items_by_name: dict[str, list[ProcessedStoreData]] = {}
     processed_keys: set[str] = set()
@@ -422,6 +618,8 @@ def _group_items_by_name(
             days,
             target_config,
             include_history=include_history,
+            all_latest=all_latest,
+            all_stats=all_stats,
         )
         if store_data_list:
             items_by_name[item.name] = store_data_list
@@ -439,9 +637,17 @@ def _group_items_by_name(
         for resolved_item in resolved_items_list:
             # 検索系ストアの場合の item_key を生成
             if resolved_item.check_method in price_watch.target.SEARCH_CHECK_METHODS:
-                keyword = resolved_item.search_keyword or resolved_item.name
+                # Yahoo は JANコードが指定されていれば JANコードを search_keyword として使用
+                if (
+                    resolved_item.check_method == price_watch.target.CheckMethod.YAHOO_SEARCH
+                    and resolved_item.jan_code
+                ):
+                    keyword = resolved_item.jan_code
+                else:
+                    keyword = resolved_item.search_keyword or resolved_item.name
+                search_cond = _build_search_cond_for_item(resolved_item)
                 item_key = price_watch.managers.history.generate_item_key(
-                    search_keyword=keyword, search_cond="", store_name=resolved_item.store
+                    search_keyword=keyword, search_cond=search_cond, store_name=resolved_item.store
                 )
             else:
                 item_key = price_watch.managers.history.url_hash(resolved_item.url)
@@ -507,11 +713,22 @@ def get_items(
         target_config = price_watch.webapi.cache.get_target_config()
         target_item_keys = _get_target_item_keys(target_config)
 
-        all_items = price_watch.webapi.cache.get_history_manager().get_all_items()
+        history = price_watch.webapi.cache.get_history_manager()
+        all_items = history.get_all_items()
+
+        # パフォーマンス最適化: 最新価格と統計情報を一括取得
+        all_latest = history.get_all_latest()
+        all_stats = history.get_all_stats(days)
 
         # アイテム名でグルーピング（履歴なしで軽量化）
         items_by_name = _group_items_by_name(
-            all_items, target_item_keys, days, target_config, include_history=False
+            all_items,
+            target_item_keys,
+            days,
+            target_config,
+            include_history=False,
+            all_latest=all_latest,
+            all_stats=all_stats,
         )
 
         # カテゴリーマッピングを構築（アイテム名 → カテゴリー名）
@@ -563,6 +780,119 @@ def serve_thumb(filename: str) -> flask.Response:
         mimetype="image/png",
         max_age=86400,  # 24時間キャッシュ
     )
+
+
+@blueprint.route("/chart/<item_key>.png")
+def serve_chart_image(item_key: str) -> flask.Response:
+    """チャート画像を配信.
+
+    - キャッシュが有効なら配信
+    - なければ ChartImageWorker 経由で生成
+    - Cache-Control: public, max-age=10800 (3時間)
+    """
+    try:
+        # 設定を取得
+        app_config = price_watch.webapi.cache.get_app_config()
+        if app_config is None:
+            return flask.Response("Configuration not found", status=500)
+
+        cache_dir = app_config.data.cache
+        db_path = app_config.data.price
+
+        # キャッシュをチェック
+        cache_path = price_watch.chart_image.get_cache_path(item_key, cache_dir)
+        if price_watch.chart_image.is_cache_valid(cache_path):
+            return flask.send_file(
+                cache_path,
+                mimetype="image/png",
+                max_age=10800,  # 3時間キャッシュ
+            )
+
+        # ワーカーを取得
+        worker = price_watch.chart_image_worker.get_worker()
+        if worker is None:
+            # ワーカーが未初期化の場合はプレースホルダーを返す
+            logging.warning("ChartImageWorker not initialized, returning placeholder")
+            placeholder = _generate_placeholder_image()
+            response = flask.send_file(
+                placeholder,
+                mimetype="image/png",
+            )
+            response.cache_control.max_age = PLACEHOLDER_CACHE_SEC
+            response.cache_control.public = True
+            return response
+
+        # キャッシュがない場合はオンデマンド生成
+        target_config = price_watch.webapi.cache.get_target_config()
+
+        # 通貨換算レートを構築
+        currency_rates: dict[str, float] = {}
+        if app_config.check.currency:
+            for cr in app_config.check.currency:
+                currency_rates[cr.label] = cr.rate
+
+        # アイテムデータを取得
+        result = price_watch.chart_image._get_item_data_from_db(
+            item_key, db_path, target_config, currency_rates
+        )
+        if result[0] is None:
+            return flask.Response("Item not found", status=404)
+
+        item_name: str = result[0]
+        stores_data: list[price_watch.chart_image.StoreChartData] = result[1]
+
+        if not stores_data:
+            return flask.Response("No store data", status=404)
+
+        # ストア定義を取得（色情報用）
+        store_definitions = []
+        if target_config is not None:
+            store_definitions = [
+                price_watch.chart_image.StoreDefinition(name=s.name, color=s.color)
+                for s in target_config.stores
+            ]
+
+        # チャートデータを作成
+        chart_data = price_watch.chart_image.ChartData(
+            item_name=item_name,
+            item_key=item_key,
+            stores=stores_data,
+            store_definitions=store_definitions,
+        )
+
+        # ワーカー経由で画像を生成
+        result_path = worker.request_chart(chart_data, timeout=CHART_GENERATION_TIMEOUT_SEC)
+
+        if result_path is None:
+            # タイムアウトまたはエラー時はプレースホルダー画像を返す
+            # 短いキャッシュ時間を設定してリトライを促す
+            logging.info("Returning placeholder for %s (generation pending)", item_key)
+            placeholder = _generate_placeholder_image()
+            response = flask.send_file(
+                placeholder,
+                mimetype="image/png",
+            )
+            response.cache_control.max_age = PLACEHOLDER_CACHE_SEC
+            response.cache_control.public = True
+            return response
+
+        return flask.send_file(
+            result_path,
+            mimetype="image/png",
+            max_age=10800,  # 3時間キャッシュ
+        )
+
+    except Exception:
+        logging.exception("Error serving chart image")
+        # エラー時もプレースホルダーを返す
+        placeholder = _generate_placeholder_image()
+        response = flask.send_file(
+            placeholder,
+            mimetype="image/png",
+        )
+        response.cache_control.max_age = PLACEHOLDER_CACHE_SEC
+        response.cache_control.public = True
+        return response
 
 
 @blueprint.route("/api/items/<item_key>/history")
@@ -729,16 +1059,24 @@ def _build_ogp_data(
 def _get_item_data_for_ogp(
     item_key: str,
     days: int | None = 30,
+    *,
+    include_history: bool = False,
 ) -> tuple[str | None, list[price_watch.webapi.schemas.StoreEntry]]:
     """OGP 用のアイテムデータを取得.
 
     item_key からアイテム名を特定し、同名の全ストアのデータを返す。
 
+    Args:
+        item_key: アイテムキー
+        days: 期間（日数）
+        include_history: 履歴を含めるかどうか（OGP画像生成時はTrue、HTML生成時はFalse）
+
     Returns:
         (アイテム名, ストアエントリリスト) のタプル。アイテムが見つからない場合は (None, [])
     """
     target_config = price_watch.webapi.cache.get_target_config()
-    all_items = price_watch.webapi.cache.get_history_manager().get_all_items()
+    history = price_watch.webapi.cache.get_history_manager()
+    all_items = history.get_all_items()
 
     # item_key からアイテム名を特定
     primary = next((item for item in all_items if item.item_key == item_key), None)
@@ -748,6 +1086,10 @@ def _get_item_data_for_ogp(
     item_name = primary.name
     target_item_keys = _get_target_item_keys(target_config)
 
+    # パフォーマンス最適化: 最新価格と統計情報を一括取得
+    all_latest = history.get_all_latest()
+    all_stats = history.get_all_stats(days)
+
     # 同名の全ストアのデータを収集
     store_data_list = _collect_stores_for_name(
         item_name,
@@ -755,7 +1097,9 @@ def _get_item_data_for_ogp(
         target_item_keys,
         days,
         target_config,
-        include_history=True,
+        include_history=include_history,
+        all_latest=all_latest,
+        all_stats=all_stats,
     )
 
     stores = [sd.store_entry for sd in store_data_list]
@@ -943,8 +1287,8 @@ def ogp_image(item_key: str) -> flask.Response:
         # フォント設定を取得
         font_paths = price_watch.webapi.ogp.FontPaths.from_config(app_config.font)
 
-        # アイテムデータを取得
-        item_name, stores = _get_item_data_for_ogp(item_key)
+        # アイテムデータを取得（OGP画像にはチャート用の履歴が必要）
+        item_name, stores = _get_item_data_for_ogp(item_key, include_history=True)
 
         if item_name is None or not stores:
             return flask.Response("Item not found", status=404)
@@ -989,8 +1333,8 @@ def ogp_image_square(item_key: str) -> flask.Response:
         # フォント設定を取得
         font_paths = price_watch.webapi.ogp.FontPaths.from_config(app_config.font)
 
-        # アイテムデータを取得
-        item_name, stores = _get_item_data_for_ogp(item_key)
+        # アイテムデータを取得（OGP画像にはチャート用の履歴が必要）
+        item_name, stores = _get_item_data_for_ogp(item_key, include_history=True)
 
         if item_name is None or not stores:
             return flask.Response("Item not found", status=404)
@@ -1398,3 +1742,105 @@ def api_sysinfo() -> flask.Response:
             "load_average": load_average,
         }
     )
+
+
+# === Web Push API ===
+
+
+@blueprint.route("/api/push/vapid-public-key")
+def api_push_vapid_public_key() -> flask.Response | tuple[flask.Response, int]:
+    """VAPID 公開鍵を取得."""
+    try:
+        app_config = price_watch.webapi.cache.get_app_config()
+        if app_config is None or app_config.webpush is None:
+            error = price_watch.webapi.schemas.ErrorResponse(error="Web Push not configured")
+            return flask.jsonify(error.model_dump()), 503
+
+        response = price_watch.webapi.schemas.PushVapidKeyResponse(
+            public_key=app_config.webpush.vapid_public_key
+        )
+        return flask.jsonify(response.model_dump())
+
+    except Exception:
+        logging.exception("Error getting VAPID public key")
+        error = price_watch.webapi.schemas.ErrorResponse(error="Internal server error")
+        return flask.jsonify(error.model_dump()), 500
+
+
+@blueprint.route("/api/push/subscribe", methods=["POST"])
+@validate()
+def api_push_subscribe(
+    body: price_watch.webapi.schemas.PushSubscribeRequest,
+) -> flask.Response | tuple[flask.Response, int]:
+    """Push 通知をサブスクライブ."""
+    try:
+        history_manager = price_watch.webapi.cache.get_history_manager()
+
+        subscription_id = history_manager.push.subscribe(
+            item_key=body.item_key,
+            endpoint=body.endpoint,
+            p256dh=body.keys.p256dh,
+            auth=body.keys.auth,
+        )
+
+        response = price_watch.webapi.schemas.PushSubscribeResponse(
+            success=True,
+            subscription_id=subscription_id,
+        )
+        return flask.jsonify(response.model_dump())
+
+    except Exception:
+        logging.exception("Error subscribing to push notifications")
+        error = price_watch.webapi.schemas.ErrorResponse(error="Internal server error")
+        return flask.jsonify(error.model_dump()), 500
+
+
+@blueprint.route("/api/push/unsubscribe", methods=["POST"])
+@validate()
+def api_push_unsubscribe(
+    body: price_watch.webapi.schemas.PushUnsubscribeRequest,
+) -> flask.Response | tuple[flask.Response, int]:
+    """Push 通知をアンサブスクライブ."""
+    try:
+        history_manager = price_watch.webapi.cache.get_history_manager()
+
+        success = history_manager.push.unsubscribe(
+            item_key=body.item_key,
+            endpoint=body.endpoint,
+        )
+
+        return flask.jsonify({"success": success})
+
+    except Exception:
+        logging.exception("Error unsubscribing from push notifications")
+        error = price_watch.webapi.schemas.ErrorResponse(error="Internal server error")
+        return flask.jsonify(error.model_dump()), 500
+
+
+@blueprint.route("/api/items/<item_key>/push/status")
+def api_push_status(item_key: str) -> flask.Response | tuple[flask.Response, int]:
+    """Push 通知のサブスクリプション状態を取得.
+
+    クエリパラメータ endpoint でサブスクライブ状態を確認します。
+    endpoint が指定されていない場合は subscribed=False を返します。
+    """
+    try:
+        endpoint = flask.request.args.get("endpoint", "")
+        history_manager = price_watch.webapi.cache.get_history_manager()
+
+        subscribed = False
+        if endpoint:
+            subscribed = history_manager.push.is_subscribed(item_key, endpoint)
+
+        subscription_count = history_manager.push.count_subscriptions(item_key)
+
+        response = price_watch.webapi.schemas.PushStatusResponse(
+            subscribed=subscribed,
+            subscription_count=subscription_count,
+        )
+        return flask.jsonify(response.model_dump())
+
+    except Exception:
+        logging.exception("Error getting push subscription status")
+        error = price_watch.webapi.schemas.ErrorResponse(error="Internal server error")
+        return flask.jsonify(error.model_dump()), 500

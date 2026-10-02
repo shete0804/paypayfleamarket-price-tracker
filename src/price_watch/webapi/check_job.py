@@ -124,7 +124,7 @@ def _run_check_job(
         item_def: target.yaml から取得したアイテム定義
         store_def: target.yaml から取得したストア定義
     """
-    import price_watch.store.amazon.paapi as paapi
+    import price_watch.store.amazon.api as amazon_api
     import price_watch.store.flea_market as flea_market
     import price_watch.store.scrape as scrape
     import price_watch.store.yahoo as yahoo
@@ -186,17 +186,15 @@ def _run_check_job(
 
         # チェック方法に応じた処理
         config = app.config_manager.config
-        driver = app.browser_manager.driver
 
         if resolved_item.check_method == CheckMethod.SCRAPE:
-            if driver is None:
-                raise RuntimeError("WebDriver が初期化されていません")
-            result = scrape.check(
-                config,
-                driver,
-                resolved_item,
-                loop=0,
-            )
+            with app.browser_manager.page() as page:
+                result = scrape.check(
+                    config,
+                    page,
+                    resolved_item,
+                    loop=0,
+                )
 
             job.message_queue.put(
                 JobMessage(type="log", data={"message": f"チェック結果: crawl_status={result.crawl_status}"})
@@ -211,7 +209,7 @@ def _run_check_job(
             job.message_queue.put(JobMessage(type="result", data=job.result))
 
         elif resolved_item.check_method == CheckMethod.AMAZON_PAAPI:
-            results = paapi.check_item_list(config, [resolved_item])
+            results = amazon_api.check_item_list(config, [resolved_item])
 
             if results:
                 result = results[0]
@@ -235,9 +233,8 @@ def _run_check_job(
             CheckMethod.RAKUMA_SEARCH,
             CheckMethod.PAYPAY_SEARCH,
         ):
-            if driver is None:
-                raise RuntimeError("WebDriver が初期化されていません")
-            result = flea_market.check(config, driver, resolved_item)
+            with app.browser_manager.page() as page:
+                result = flea_market.check(config, page, resolved_item)
 
             job.result = {
                 "price": result.price,

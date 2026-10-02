@@ -14,6 +14,7 @@ from price_watch.managers.history.connection import HistoryDBConnection
 from price_watch.managers.history.event_repository import EventRepository
 from price_watch.managers.history.item_repository import ItemRepository
 from price_watch.managers.history.price_repository import PriceRepository
+from price_watch.managers.history.push_repository import PushRepository, PushSubscription
 from price_watch.managers.history.utils import generate_item_key, url_hash
 
 if TYPE_CHECKING:
@@ -33,6 +34,8 @@ __all__ = [
     "HistoryManager",
     "ItemRepository",
     "PriceRepository",
+    "PushRepository",
+    "PushSubscription",
     "generate_item_key",
     "url_hash",
 ]
@@ -49,12 +52,14 @@ class HistoryManager:
     items: ItemRepository = field(init=False)
     prices: PriceRepository = field(init=False)
     events: EventRepository = field(init=False)
+    push: PushRepository = field(init=False)
 
     def __post_init__(self) -> None:
         """Repository インスタンスを初期化."""
         self.items = ItemRepository(db=self.db)
         self.prices = PriceRepository(db=self.db, item_repo=self.items)
         self.events = EventRepository(db=self.db)
+        self.push = PushRepository(db=self.db)
 
     @classmethod
     def create(cls, data_path: pathlib.Path) -> HistoryManager:
@@ -75,6 +80,7 @@ class HistoryManager:
         テーブルとインデックスを作成します。
         """
         self.db.initialize()
+        self.push.initialize_table()
 
     # --- 後方互換性のための委譲メソッド ---
 
@@ -466,6 +472,25 @@ class HistoryManager:
             イベント数
         """
         return self.events.count_by_price(item_id, prices)
+
+    def get_all_latest(self) -> dict[int, LatestPriceRecord]:
+        """全アイテムの最新価格を一括取得.
+
+        Returns:
+            アイテムID → 最新価格情報のマッピング
+        """
+        return self.prices.get_all_latest()
+
+    def get_all_stats(self, days: int | None = None) -> dict[int, ItemStats]:
+        """全アイテムの統計情報を一括取得.
+
+        Args:
+            days: 期間（日数）
+
+        Returns:
+            アイテムID → 統計情報のマッピング
+        """
+        return self.prices.get_all_stats(days)
 
     @staticmethod
     def generate_item_key(

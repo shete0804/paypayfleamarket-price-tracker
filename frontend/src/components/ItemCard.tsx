@@ -1,36 +1,41 @@
+import { memo, useMemo, useCallback } from "react";
 import { ClockIcon } from "@heroicons/react/24/outline";
 import dayjs from "dayjs";
-import type { Item, StoreDefinition, Period } from "../types";
-import LazyPriceChart from "./LazyPriceChart";
+import type { Item } from "../types";
+import ChartImage from "./ChartImage";
 import StoreRow from "./StoreRow";
+import FavoriteButton from "./FavoriteButton";
+import PriceTrendBadge from "./PriceTrendBadge";
+import { usePriceTrend } from "../hooks/usePriceTrend";
 import { formatPrice } from "../utils/formatPrice";
 
 interface ItemCardProps {
     item: Item;
-    storeDefinitions: StoreDefinition[];
     onClick?: (item: Item) => void;
-    period?: Period;
-    checkIntervalSec?: number;
 }
 
-export default function ItemCard({ item, storeDefinitions, onClick, period = "30", checkIntervalSec = 1800 }: ItemCardProps) {
+function ItemCard({ item, onClick }: ItemCardProps) {
     // ストアを実質価格の安い順にソート（価格nullのものは後ろに）
-    const sortedStores = [...item.stores].sort((a, b) => {
-        const aPrice = a.effective_price;
-        const bPrice = b.effective_price;
-        if (aPrice === null && bPrice === null) return 0;
-        if (aPrice === null) return 1;
-        if (bPrice === null) return -1;
-        return aPrice - bPrice;
-    });
+    const sortedStores = useMemo(() => {
+        return [...item.stores].sort((a, b) => {
+            const aPrice = a.effective_price;
+            const bPrice = b.effective_price;
+            if (aPrice === null && bPrice === null) return 0;
+            if (aPrice === null) return 1;
+            if (bPrice === null) return -1;
+            return aPrice - bPrice;
+        });
+    }, [item.stores]);
 
     // 最終更新日時（最新のものを使用、空文字は除外）
-    const validUpdates = item.stores.filter((s) => s.last_updated);
-    const lastUpdated = validUpdates.length > 0
-        ? validUpdates.reduce((latest, store) => {
-              return store.last_updated > latest ? store.last_updated : latest;
-          }, validUpdates[0].last_updated)
-        : null;
+    const lastUpdated = useMemo(() => {
+        const validUpdates = item.stores.filter((s) => s.last_updated);
+        return validUpdates.length > 0
+            ? validUpdates.reduce((latest, store) => {
+                  return store.last_updated > latest ? store.last_updated : latest;
+              }, validUpdates[0].last_updated)
+            : null;
+    }, [item.stores]);
 
     // 有効な価格があるかどうか（null でなければ価格あり、0円も有効な価格）
     const hasValidPrice = item.best_effective_price !== null;
@@ -39,11 +44,17 @@ export default function ItemCard({ item, storeDefinitions, onClick, period = "30
     const bestStore = item.stores.find((s) => s.store === item.best_store);
     const priceUnit = bestStore?.price_unit ?? "円";
 
-    const handleClick = () => {
+    // 全ストアの履歴を結合して価格トレンドを計算
+    const combinedHistory = useMemo(() => {
+        return item.stores.flatMap((s) => s.history);
+    }, [item.stores]);
+    const { trend, priceDropPercent } = usePriceTrend(combinedHistory);
+
+    const handleClick = useCallback(() => {
         if (onClick) {
             onClick(item);
         }
-    };
+    }, [onClick, item]);
 
     return (
         <div
@@ -66,14 +77,18 @@ export default function ItemCard({ item, storeDefinitions, onClick, period = "30
                     <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">{item.name}</h3>
                         <div className="flex items-center gap-2 mt-2">
-                            {hasValidPrice ? (
-                                <span className="text-lg font-bold text-gray-900">
-                                    {formatPrice(item.best_effective_price!, priceUnit)}
-                                </span>
-                            ) : (
-                                <span className="text-lg text-gray-400">---</span>
-                            )}
-                            <span className="text-xs text-gray-500">({item.stores.length}店舗)</span>
+                            <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+                                {hasValidPrice ? (
+                                    <span className="text-lg font-bold text-gray-900">
+                                        {formatPrice(item.best_effective_price!, priceUnit)}
+                                    </span>
+                                ) : (
+                                    <span className="text-lg text-gray-400">---</span>
+                                )}
+                                <PriceTrendBadge trend={trend} priceDropPercent={priceDropPercent} />
+                                <span className="text-xs text-gray-500">({item.stores.length}店舗)</span>
+                            </div>
+                            <FavoriteButton itemName={item.name} size="md" />
                         </div>
                     </div>
                 </div>
@@ -94,7 +109,7 @@ export default function ItemCard({ item, storeDefinitions, onClick, period = "30
             {/* グラフと最終更新を下部に配置 */}
             <div className="mt-auto">
                 <div className="px-4 pb-4">
-                    <LazyPriceChart stores={item.stores} storeDefinitions={storeDefinitions} period={period} checkIntervalSec={checkIntervalSec} />
+                    <ChartImage key={item.stores[0]?.item_key ?? ""} itemKey={item.stores[0]?.item_key ?? ""} className="h-40" />
                 </div>
 
                 <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 flex items-center gap-1 text-xs text-gray-500">
@@ -107,3 +122,23 @@ export default function ItemCard({ item, storeDefinitions, onClick, period = "30
         </div>
     );
 }
+
+export default memo(ItemCard, (prev, next) => {
+    // item_key と updated_at で比較（更新がなければ再レンダリングしない）
+    const prevItemKey = prev.item.stores[0]?.item_key ?? "";
+    const nextItemKey = next.item.stores[0]?.item_key ?? "";
+
+    if (prevItemKey !== nextItemKey) return false;
+
+    // ストアの更新日時で変更を検出
+    const prevUpdated = prev.item.stores.map((s) => s.last_updated).join(",");
+    const nextUpdated = next.item.stores.map((s) => s.last_updated).join(",");
+    if (prevUpdated !== nextUpdated) return false;
+
+    // 価格の変更を検出
+    const prevPrice = prev.item.best_effective_price;
+    const nextPrice = next.item.best_effective_price;
+    if (prevPrice !== nextPrice) return false;
+
+    return true;
+});

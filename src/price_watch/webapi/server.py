@@ -19,11 +19,13 @@ import urllib.parse
 from dataclasses import dataclass
 
 import flask
+import flask.typing
 import flask_cors
 import my_lib.webapp.base
 import my_lib.webapp.config
 import my_lib.webapp.event
 import my_lib.webapp.util
+import werkzeug.exceptions
 import werkzeug.serving
 
 URL_PREFIX = "/price"
@@ -153,6 +155,7 @@ def create_app(
     import price_watch.webapi.page
     import price_watch.webapi.price_record_editor
     import price_watch.webapi.target_editor
+    import price_watch.webapi.yodobashi_search
 
     # CLI 引数で指定されたファイルパスをキャッシュに反映
     if config_file is not None and target_file is not None:
@@ -160,10 +163,6 @@ def create_app(
 
     # NOTE: アクセスログは無効にする
     logging.getLogger("werkzeug").setLevel(logging.ERROR)
-
-    # my_lib.webapp の設定
-    my_lib.webapp.config.URL_PREFIX = URL_PREFIX
-    my_lib.webapp.config.STATIC_DIR_PATH = static_dir_path
 
     app = flask.Flask("price_watch_webui")
 
@@ -200,15 +199,42 @@ def create_app(
     app.register_blueprint(price_watch.webapi.check_job.check_job_bp, url_prefix=URL_PREFIX)
     # Amazon 検索 API
     app.register_blueprint(price_watch.webapi.amazon_search.blueprint, url_prefix=URL_PREFIX)
+    # ヨドバシ検索 API
+    app.register_blueprint(price_watch.webapi.yodobashi_search.blueprint, url_prefix=URL_PREFIX)
     # 価格記録編集 API
     app.register_blueprint(price_watch.webapi.price_record_editor.blueprint, url_prefix=URL_PREFIX)
 
     # フロントエンド静的ファイル（React アプリ）
     if static_dir_path.exists():
-        app.register_blueprint(my_lib.webapp.base.blueprint, url_prefix=URL_PREFIX)
-        app.register_blueprint(my_lib.webapp.base.blueprint_default)
+        webapp_environment = my_lib.webapp.config.WebappEnvironment(
+            url_prefix=URL_PREFIX,
+            static_dir_path=static_dir_path,
+        )
+        app.register_blueprint(
+            my_lib.webapp.base.create_static_blueprint(environment=webapp_environment),
+            url_prefix=URL_PREFIX,
+        )
+        app.register_blueprint(
+            my_lib.webapp.base.create_root_redirect_blueprint(url_prefix=URL_PREFIX),
+        )
     app.register_blueprint(my_lib.webapp.event.blueprint, url_prefix=URL_PREFIX)
     app.register_blueprint(my_lib.webapp.util.blueprint, url_prefix=URL_PREFIX)
+
+    # グローバルエラーハンドラー: 予期しない例外をキャッチしてログ記録
+    @app.errorhandler(500)
+    def handle_internal_error(error: Exception) -> flask.typing.ResponseReturnValue:
+        """Handle internal server errors."""
+        logging.exception("Internal server error: %s", error)
+        return flask.jsonify({"error": "Internal Server Error"}), 500
+
+    @app.errorhandler(Exception)
+    def handle_exception(error: Exception) -> flask.typing.ResponseReturnValue:
+        """Handle uncaught exceptions."""
+        # HTTPException はそのまま処理（Response に変換して返す）
+        if isinstance(error, werkzeug.exceptions.HTTPException):
+            return error.get_response()
+        logging.exception("Unhandled exception: %s", error)
+        return flask.jsonify({"error": "Internal Server Error"}), 500
 
     my_lib.webapp.config.show_handler_list(app)
 
@@ -263,6 +289,7 @@ def term(handle: ServerHandle) -> None:
 
     stop_db_watcher()
     price_watch.webapi.cache.stop_file_watcher()
+    price_watch.webapi.cache.quit_yodobashi_browser()
     handle.server.shutdown()
     handle.server.server_close()
 
