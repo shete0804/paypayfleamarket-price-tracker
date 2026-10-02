@@ -1,6 +1,9 @@
 check:
     interval_sec: 999999999
 
+slack:
+    bot_token: xoxb-dummy-token
+
 data:
     selenium: ./data
     dump: ./data/debug
