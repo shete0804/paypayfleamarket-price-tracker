@@ -12,10 +12,140 @@ import unittest.mock
 
 import flask
 import flask.testing
+import my_lib.pytest_util
 import pytest
 
 import price_watch.managers.history
 import price_watch.webapi.server
+
+# === ブラウザ (my_lib.browser) モックヘルパー ===
+#
+# プロダクションコードは Selenium の (driver, wait) タプルから
+# my_lib.browser の Page 抽象へ移行済み。テストでは以下のヘルパーで
+# Page / Element のモックを組み立てる。
+#
+# Page / Element の要素検索（find / find_all / exists）は Locator を受け取る。
+# XPath 文字列は locator.value に入るため、xpath ごとに返り値を出し分けたい
+# 場合は build_page / build_element の find/find_all/exists に
+# 「値の部分文字列 -> 返り値」のマッピングか、値を受け取る関数を渡す。
+
+
+def _locator_dispatch(spec, default):
+    """Locator を受け取る side_effect を生成する。"""
+    if spec is None:
+        return lambda *a, **k: default
+    if callable(spec):
+        return lambda locator, *a, **k: spec(locator.value)
+
+    pairs = list(spec.items()) if isinstance(spec, dict) else list(spec)
+
+    def _side_effect(locator, *a, **k):
+        for substr, result in pairs:
+            if substr in locator.value:
+                return result
+        return default
+
+    return _side_effect
+
+
+def build_element(*, text="", attrs=None, screenshot=b"\x89PNG\r\n", visible=True, find=None, find_all=None):
+    """my_lib.browser.Element のモックを生成する。"""
+    element = unittest.mock.MagicMock(name="element")
+    element.text = text
+
+    attr_map = dict(attrs or {})
+    element.attr = unittest.mock.MagicMock(side_effect=lambda name: attr_map.get(name))
+
+    element.screenshot = unittest.mock.MagicMock(return_value=screenshot)
+    element.click = unittest.mock.MagicMock()
+    element.type = unittest.mock.MagicMock()
+    element.press = unittest.mock.MagicMock()
+    element.is_visible = unittest.mock.MagicMock(return_value=visible)
+    _set_finders(element, find, find_all)
+    return element
+
+
+def _set_finders(mock, find, find_all):
+    """find / find_all をモックに設定する。"""
+    if find is None:
+        mock.find = unittest.mock.MagicMock(return_value=None)
+    else:
+        mock.find = unittest.mock.MagicMock(side_effect=_locator_dispatch(find, None))
+    if find_all is None:
+        mock.find_all = unittest.mock.MagicMock(return_value=[])
+    else:
+        mock.find_all = unittest.mock.MagicMock(side_effect=_locator_dispatch(find_all, []))
+
+
+def build_page(
+    *,
+    url="https://example.com/item",
+    title="",
+    content="<html></html>",
+    find=None,
+    find_all=None,
+    exists=False,
+):
+    """my_lib.browser.Page のモックを生成する。"""
+    page = unittest.mock.MagicMock(name="page")
+    page.url = url
+    page.title = title
+    page.content = content
+
+    _set_finders(page, find, find_all)
+
+    if callable(exists):
+        page.exists = unittest.mock.MagicMock(side_effect=lambda locator, *a, **k: exists(locator.value))
+    else:
+        page.exists = unittest.mock.MagicMock(return_value=exists)
+
+    page.wait_visible = unittest.mock.MagicMock(return_value=build_element())
+    page.wait_clickable = unittest.mock.MagicMock(return_value=build_element())
+    page.wait_absent = unittest.mock.MagicMock(return_value=None)
+    page.wait_text = unittest.mock.MagicMock(return_value=None)
+    page.wait_until = unittest.mock.MagicMock(return_value=None)
+    page.goto = unittest.mock.MagicMock()
+    page.refresh = unittest.mock.MagicMock()
+    page.screenshot = unittest.mock.MagicMock(return_value=b"\x89PNG")
+    return page
+
+
+@pytest.fixture
+def make_element():
+    """Element モック生成関数を返すフィクスチャ。"""
+    return build_element
+
+
+@pytest.fixture
+def make_page():
+    """Page モック生成関数を返すフィクスチャ。"""
+    return build_page
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _isolate_undetected_chromedriver_cache(tmp_path_factory, worker_id):
+    """pytest-xdist の並列ワーカーごとに undetected_chromedriver のキャッシュを分離。
+
+    `undetected_chromedriver.Patcher.auto()` は `~/.local/share/undetected_chromedriver/`
+    のバイナリを unlink → 再ダウンロード → unzip → rename する処理を chrome 起動の
+    たびに行う。並列ワーカーが同じパスを取り合うと、auto() 完了直後の chromedriver
+    実行段階で別ワーカーが unlink してしまい、`ValueError: The path is not a valid file`
+    や `IsADirectoryError` で flaky に失敗する。
+
+    Patcher 内部の Lock はプロセス内 threading.Lock なのでワーカー間（プロセス間）に
+    効かず、外部から filelock で auto() だけ排他化しても auto() 後の実行段階の競合は
+    防げない。`undetected_chromedriver.Patcher.data_path`（クラス属性）をワーカー
+    固有の一時ディレクトリに差し替えて、各ワーカーで独立したキャッシュを使う。
+
+    HOME 全体は切り替えない（playwright の `~/.cache/ms-playwright/` 等を巻き込まない）。
+    """
+    if worker_id == "master":
+        return
+
+    import undetected_chromedriver
+
+    isolated_path = tmp_path_factory.mktemp(f"uc_cache_{worker_id}")
+    undetected_chromedriver.Patcher.data_path = str(isolated_path)
 
 
 # === 環境モック ===
@@ -34,12 +164,22 @@ def env_mock():
 
 @pytest.fixture(scope="session", autouse=True)
 def slack_mock():
-    """Slack API のモック - 簡略版"""
-    with unittest.mock.patch("my_lib.notify.slack.slack_sdk.web.client.WebClient") as mock_client:
-        mock_client.return_value.chat_postMessage.return_value = {"ok": True}
-        mock_client.return_value.files_upload_v2.return_value = {"ok": True}
-        mock_client.return_value.files_getUploadURLExternal.return_value = {"ok": True}
-        yield mock_client
+    """Slack API のモック"""
+    with (
+        unittest.mock.patch(
+            "my_lib.notify.slack.slack_sdk.web.client.WebClient.chat_postMessage",
+            return_value={"ok": True, "ts": "1234567890.123456"},
+        ),
+        unittest.mock.patch(
+            "my_lib.notify.slack.slack_sdk.web.client.WebClient.files_upload_v2",
+            return_value={"ok": True, "files": [{"id": "test_file_id"}]},
+        ),
+        unittest.mock.patch(
+            "my_lib.notify.slack.slack_sdk.web.client.WebClient.files_getUploadURLExternal",
+            return_value={"ok": True, "upload_url": "https://example.com"},
+        ) as fixture,
+    ):
+        yield fixture
 
 
 @pytest.fixture(autouse=True)
@@ -47,8 +187,11 @@ def _clear():
     """各テスト前にステートをクリア"""
     import my_lib.notify.slack
 
+    import price_watch.webapi.auth_rate_limiter
+
     my_lib.notify.slack._interval_clear()
     my_lib.notify.slack._hist_clear()
+    price_watch.webapi.auth_rate_limiter.clear_state()
 
 
 # === データベースフィクスチャ ===
@@ -56,7 +199,7 @@ def _clear():
 def temp_data_dir(tmp_path: pathlib.Path) -> pathlib.Path:
     """一時データディレクトリを作成（ワーカー固有）"""
     # pytest-xdist 並列実行時はワーカーIDをディレクトリ名に付加
-    data_dir = tmp_path / "data"
+    data_dir = my_lib.pytest_util.get_path(tmp_path / "data")
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 
@@ -183,8 +326,37 @@ def slack_checker():
 # === OGP フォントフィクスチャ ===
 @pytest.fixture(scope="session")
 def font_paths() -> "price_watch.webapi.ogp.FontPaths":
-    """OGP 画像生成用フォントパスを取得 - 簡略版（テスト高速化）"""
+    """OGP 画像生成用フォントパスを取得
+
+    1. config.yaml からフォント設定を読み込む
+    2. 見つからない場合はシステムフォントを探す
+    3. それでも見つからない場合は空の FontPaths を返す
+    """
+    import price_watch.config
     import price_watch.webapi.ogp
+
+    # config.yaml からフォント設定を読み込む
+    config_path = pathlib.Path("config.yaml")
+    if config_path.exists():
+        config = price_watch.config.load(config_path)
+        if config.font is not None:
+            font_paths = price_watch.webapi.ogp.FontPaths.from_config(config.font)
+            # フォントファイルが存在するか確認
+            if font_paths.jp_medium is not None and font_paths.jp_medium.exists():
+                return font_paths
+
+    # フォールバック: システムフォントを探す
+    for font_path in price_watch.webapi.ogp.JAPANESE_FONT_PATHS:
+        if pathlib.Path(font_path).exists():
+            path = pathlib.Path(font_path)
+            return price_watch.webapi.ogp.FontPaths(
+                jp_regular=path,
+                jp_medium=path,
+                jp_bold=path,
+                en_medium=path,
+                en_bold=path,
+            )
+
     # フォントが見つからない場合は空の FontPaths を返す
     return price_watch.webapi.ogp.FontPaths()
 
