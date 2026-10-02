@@ -54,7 +54,13 @@ def _create_checked_item(
     return item
 
 
-# MockSearchResult は削除（実装版は実データを使用）
+@dataclass
+class MockSearchResult:
+    """モック用の検索結果"""
+
+    name: str
+    price: int
+    url: str
 
 
 class TestParseCond:
