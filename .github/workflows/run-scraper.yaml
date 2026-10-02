@@ -49,6 +49,8 @@ jobs:
               error:
                   channel:
                       name: "#error"
+                      id: "C0123456789"
+                  interval_min: 60
           store: {}
           data:
               selenium: ./data
