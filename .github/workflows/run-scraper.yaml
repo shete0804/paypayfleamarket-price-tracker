@@ -49,6 +49,7 @@ jobs:
               error:
                   channel:
                       name: "#error"
+          store: {}
           data:
               selenium: ./data
               dump: ./data/debug
@@ -56,6 +57,7 @@ jobs:
               thumb: ./data/thumb
               metrics: ./data/metrics
               cache: ./data/cache
+          webapp: {}
           target:
               define: target.yaml
           liveness:
