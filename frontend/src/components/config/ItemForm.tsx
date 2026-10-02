@@ -6,11 +6,12 @@ import type {
     StoreEntryConfig,
     CheckMethod,
 } from "../../types/config";
-import { DEFAULT_STORE_ENTRY, CHECK_METHOD_LABELS } from "../../types/config";
+import { DEFAULT_STORE_ENTRY, CHECK_METHOD_LABELS, CHECK_METHOD_REQUIRED_FIELDS } from "../../types/config";
 import XPathInput from "./XPathInput";
 import CheckItemModal from "./CheckItemModal";
 import AmazonSearchModal from "./AmazonSearchModal";
-import { checkAmazonSearchAvailable } from "../../services/configService";
+import YodobashiSearchModal from "./YodobashiSearchModal";
+import { checkAmazonSearchAvailable, checkYodobashiSearchAvailable } from "../../services/configService";
 
 interface ItemFormProps {
     item: ItemDefinitionConfig;
@@ -42,13 +43,21 @@ export default function ItemForm({
         storeIndex: number;
         defaultKeyword: string;
     } | null>(null);
+    const [yodobashiSearchModal, setYodobashiSearchModal] = useState<{
+        storeIndex: number;
+        defaultKeyword: string;
+    } | null>(null);
     const [isAmazonSearchAvailable, setIsAmazonSearchAvailable] = useState(false);
+    const [isYodobashiSearchAvailable, setIsYodobashiSearchAvailable] = useState(false);
 
-    // Amazon 検索 API の利用可能状態を確認
+    // Amazon/ヨドバシ検索 API の利用可能状態を確認
     useEffect(() => {
         checkAmazonSearchAvailable()
             .then(setIsAmazonSearchAvailable)
             .catch(() => setIsAmazonSearchAvailable(false));
+        checkYodobashiSearchAvailable()
+            .then(setIsYodobashiSearchAvailable)
+            .catch(() => setIsYodobashiSearchAvailable(false));
     }, []);
 
     // ストア定義のマップ（名前 → 定義）
@@ -76,10 +85,32 @@ export default function ItemForm({
                 return;
             }
 
-            // スクレイピングストアの場合は URL または ASIN が必要
-            if (storeDef.check_method === "scrape") {
-                if (!storeEntry.url && !storeEntry.asin) {
-                    newErrors[`store.${index}`] = "URL または ASIN が必要です";
+            // check_method に応じた必須フィールドチェック
+            const requiredFields = CHECK_METHOD_REQUIRED_FIELDS[storeDef.check_method as CheckMethod] || [];
+
+            for (const field of requiredFields) {
+                if (field === "url_or_asin") {
+                    if (!storeEntry.url && !storeEntry.asin) {
+                        newErrors[`store.${index}`] = "URL または ASIN が必要です";
+                    }
+                } else if (field === "url") {
+                    if (!storeEntry.url) {
+                        newErrors[`store.${index}.url`] = "URL が必要です";
+                    }
+                } else if (field === "asin") {
+                    if (!storeEntry.asin) {
+                        newErrors[`store.${index}.asin`] = "ASIN が必要です";
+                    }
+                } else if (field === "price_xpath" || field === "thumb_img_xpath" || field === "unavailable_xpath") {
+                    // XPath 系はストア定義またはストアエントリで指定可能
+                    const storeValue = storeDef[field as keyof StoreDefinitionConfig];
+                    const entryValue = storeEntry[field as keyof StoreEntryConfig];
+                    if (!storeValue && !entryValue) {
+                        const fieldLabel = field === "price_xpath" ? "価格の XPath"
+                            : field === "thumb_img_xpath" ? "サムネイル画像の XPath"
+                            : "在庫なし判定の XPath";
+                        newErrors[`store.${index}.${field}`] = `${fieldLabel} が必要です（ストア定義またはアイテムで指定）`;
+                    }
                 }
             }
         });
@@ -335,12 +366,14 @@ export default function ItemForm({
                             {item.store.map((storeEntry, index) => {
                                 const storeDef = storeMap.get(storeEntry.name);
                                 const checkMethod = storeDef?.check_method || "scrape";
-                                const isScrape = checkMethod === "scrape";
+                                const isGenericScrape = checkMethod === "scrape";
+                                const needsUrl = isGenericScrape || checkMethod === "my_lib.store.yodobashi.scrape";
                                 const isSearch = [
                                     "my_lib.store.mercari.search",
                                     "my_lib.store.rakuma.search",
                                     "my_lib.store.paypay.search",
                                     "my_lib.store.yahoo.api",
+                                    "my_lib.store.rakuten.api",
                                 ].includes(checkMethod);
 
                                 return (
@@ -376,24 +409,42 @@ export default function ItemForm({
                                                         </select>
                                                     </div>
 
-                                                    {/* スクレイピング: URL */}
-                                                    {isScrape && (
+                                                    {/* スクレイピング/ヨドバシ: URL */}
+                                                    {needsUrl && (
                                                         <div>
                                                             <label className="block text-xs font-medium text-gray-700 mb-1">
                                                                 URL
                                                             </label>
-                                                            <input
-                                                                type="text"
-                                                                value={storeEntry.url || ""}
-                                                                onChange={(e) =>
-                                                                    updateStoreEntry(index, {
-                                                                        ...storeEntry,
-                                                                        url: e.target.value || null,
-                                                                    })
-                                                                }
-                                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                                                placeholder="https://..."
-                                                            />
+                                                            <div className="flex gap-2">
+                                                                <input
+                                                                    type="text"
+                                                                    value={storeEntry.url || ""}
+                                                                    onChange={(e) =>
+                                                                        updateStoreEntry(index, {
+                                                                            ...storeEntry,
+                                                                            url: e.target.value || null,
+                                                                        })
+                                                                    }
+                                                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                                                    placeholder="https://..."
+                                                                />
+                                                                {checkMethod === "my_lib.store.yodobashi.scrape" && isYodobashiSearchAvailable && (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() =>
+                                                                            setYodobashiSearchModal({
+                                                                                storeIndex: index,
+                                                                                defaultKeyword: storeEntry.search_keyword || item.name,
+                                                                            })
+                                                                        }
+                                                                        className="inline-flex items-center px-3 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                                                        title="ヨドバシで検索して URL を選択"
+                                                                    >
+                                                                        <MagnifyingGlassIcon className="w-4 h-4 mr-1" />
+                                                                        検索
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     )}
 
@@ -498,12 +549,16 @@ export default function ItemForm({
                                                     )}
                                                 </div>
 
-                                                {errors[`store.${index}`] && (
-                                                    <p className="text-sm text-red-600">{errors[`store.${index}`]}</p>
-                                                )}
+                                                {/* ストアエントリのバリデーションエラー表示 */}
+                                                {Object.entries(errors)
+                                                    .filter(([key]) => key.startsWith(`store.${index}`))
+                                                    .map(([key, message]) => (
+                                                        <p key={key} className="text-sm text-red-600">{message}</p>
+                                                    ))
+                                                }
 
-                                                {/* スクレイピング: XPath（オプション） */}
-                                                {isScrape && (
+                                                {/* スクレイピング: XPath（オプション）- 汎用スクレイピングのみ */}
+                                                {isGenericScrape && (
                                                     <details className="text-sm">
                                                         <summary className="cursor-pointer text-gray-600 hover:text-gray-800">
                                                             詳細設定（XPath 等）
@@ -628,6 +683,20 @@ export default function ItemForm({
                         });
                     }}
                     onClose={() => setAmazonSearchModal(null)}
+                />
+            )}
+
+            {/* ヨドバシ検索モーダル */}
+            {yodobashiSearchModal && (
+                <YodobashiSearchModal
+                    defaultKeyword={yodobashiSearchModal.defaultKeyword}
+                    onSelect={(url) => {
+                        updateStoreEntry(yodobashiSearchModal.storeIndex, {
+                            ...item.store[yodobashiSearchModal.storeIndex],
+                            url,
+                        });
+                    }}
+                    onClose={() => setYodobashiSearchModal(null)}
                 />
             )}
         </form>

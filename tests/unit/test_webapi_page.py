@@ -296,6 +296,10 @@ class TestGetTargetItemKeys:
         mock_item.check_method = price_watch.target.CheckMethod.MERCARI_SEARCH
         mock_item.search_keyword = "keyword"
         mock_item.name = "Item Name"
+        mock_item.jan_code = None
+        mock_item.price_range = None
+        mock_item.cond = None
+        mock_item.exclude_keyword = None
 
         mock_config = MagicMock()
         mock_config.resolve_items.return_value = [mock_item]
@@ -311,6 +315,10 @@ class TestGetTargetItemKeys:
         mock_item.check_method = price_watch.target.CheckMethod.YAHOO_SEARCH
         mock_item.search_keyword = "keyword"
         mock_item.name = "Item Name"
+        mock_item.jan_code = None
+        mock_item.price_range = None
+        mock_item.cond = None
+        mock_item.exclude_keyword = None
 
         mock_config = MagicMock()
         mock_config.resolve_items.return_value = [mock_item]
@@ -425,6 +433,8 @@ class TestGetItems:
         mock_history_manager = MagicMock()
         mock_history_manager.get_all_items.return_value = mock_items
         mock_history_manager.get_latest.return_value = None
+        mock_history_manager.get_all_latest.return_value = {}
+        mock_history_manager.get_all_stats.return_value = {}
 
         with (
             patch.object(price_watch.webapi.cache._target_config_cache, "get", return_value=None),
@@ -804,6 +814,8 @@ class TestItemDetailPage:
 
         mock_history_manager = MagicMock()
         mock_history_manager.get_all_items.return_value = mock_items
+        mock_history_manager.get_all_latest.return_value = {1: mock_latest}
+        mock_history_manager.get_all_stats.return_value = {1: mock_stats}
         mock_history_manager.get_latest.return_value = mock_latest
         mock_history_manager.get_stats.return_value = mock_stats
         mock_history_manager.get_history.return_value = (mock_items[0], [])
@@ -1502,6 +1514,8 @@ class TestGetItemDataForOgp:
 
         mock_history_manager = MagicMock()
         mock_history_manager.get_all_items.return_value = [mock_item]
+        mock_history_manager.get_all_latest.return_value = {1: mock_latest}
+        mock_history_manager.get_all_stats.return_value = {1: mock_stats}
         mock_history_manager.get_latest.return_value = mock_latest
         mock_history_manager.get_stats.return_value = mock_stats
         mock_history_manager.get_history.return_value = (mock_item, [])
@@ -1554,6 +1568,8 @@ class TestOgpImageSuccess:
 
         mock_history_manager = MagicMock()
         mock_history_manager.get_all_items.return_value = [mock_item]
+        mock_history_manager.get_all_latest.return_value = {1: mock_latest}
+        mock_history_manager.get_all_stats.return_value = {1: mock_stats}
         mock_history_manager.get_latest.return_value = mock_latest
         mock_history_manager.get_stats.return_value = mock_stats
         mock_history_manager.get_history.return_value = (mock_item, [])
@@ -1603,6 +1619,8 @@ class TestOgpImageSuccess:
 
         mock_history_manager = MagicMock()
         mock_history_manager.get_all_items.return_value = [mock_item]
+        mock_history_manager.get_all_latest.return_value = {1: mock_latest}
+        mock_history_manager.get_all_stats.return_value = {1: mock_stats}
         mock_history_manager.get_latest.return_value = mock_latest
         mock_history_manager.get_stats.return_value = mock_stats
         mock_history_manager.get_history.return_value = (mock_item, [])
@@ -1811,6 +1829,10 @@ class TestGroupItemsWithMercariSearch:
         mock_mercari_item.url = None
         mock_mercari_item.search_keyword = "keyword"
         mock_mercari_item.check_method = price_watch.target.CheckMethod.MERCARI_SEARCH
+        mock_mercari_item.jan_code = None
+        mock_mercari_item.price_range = None
+        mock_mercari_item.cond = None
+        mock_mercari_item.exclude_keyword = None
 
         # ストア定義のモック
         mock_store = MagicMock()

@@ -3,11 +3,18 @@
 
 HistoryManager, target.yaml, config.yaml のキャッシュを管理します。
 target.yaml の変更を監視し、変更時にキャッシュを無効化して SSE で通知します。
+ヨドバシ検索用のブラウザも管理します。
 """
 
+from __future__ import annotations
+
+import contextlib
 import logging
 import pathlib
+import threading
+from typing import TYPE_CHECKING
 
+import my_lib.browser
 import my_lib.file_watcher
 import my_lib.webapp.event
 
@@ -16,6 +23,11 @@ import price_watch.file_cache
 import price_watch.managers.history
 import price_watch.target
 from price_watch.managers import HistoryManager
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    from my_lib.browser import Browser, Page
 
 # HistoryManager のキャッシュ（遅延初期化）
 _history_manager: HistoryManager | None = None
@@ -164,3 +176,65 @@ def get_config_cache() -> price_watch.file_cache.FileCache[price_watch.config.Ap
 def get_target_config_cache() -> price_watch.file_cache.FileCache[price_watch.target.TargetConfig]:
     """target.yaml キャッシュオブジェクトを取得."""
     return _target_config_cache
+
+
+# ヨドバシ検索用ブラウザ管理
+_yodobashi_browser: Browser | None = None
+_yodobashi_browser_lock: threading.Lock = threading.Lock()
+
+
+def _get_yodobashi_browser() -> my_lib.browser.Browser | None:
+    """ヨドバシ検索用のブラウザを取得（遅延初期化）.
+
+    Returns:
+        Browser インスタンス（初期化失敗時は None）
+    """
+    global _yodobashi_browser
+
+    with _yodobashi_browser_lock:
+        if _yodobashi_browser is not None:
+            return _yodobashi_browser
+
+        config = get_app_config()
+        if config is None:
+            logging.error("Cannot create Yodobashi browser: config not available")
+            return None
+
+        try:
+            logging.info("Creating Yodobashi search browser")
+            _yodobashi_browser = my_lib.browser.launch(
+                my_lib.browser.BrowserProfile(
+                    name="yodobashi_search",
+                    data_dir=config.data.selenium,
+                ),
+            )
+        except my_lib.browser.BrowserError:
+            logging.exception("Failed to create Yodobashi search browser")
+            return None
+        return _yodobashi_browser
+
+
+@contextlib.contextmanager
+def yodobashi_page() -> Iterator[Page | None]:
+    """ヨドバシ検索用のタブを開いて返し、with を抜けると閉じる.
+
+    Yields:
+        Page インスタンス（ブラウザの初期化失敗時は None）
+    """
+    browser = _get_yodobashi_browser()
+    if browser is None:
+        yield None
+        return
+    with browser.page() as page:
+        yield page
+
+
+def quit_yodobashi_browser() -> None:
+    """ヨドバシ検索用ブラウザを終了."""
+    global _yodobashi_browser
+
+    with _yodobashi_browser_lock:
+        if _yodobashi_browser is not None:
+            logging.info("Quitting Yodobashi search browser")
+            _yodobashi_browser.close()
+            _yodobashi_browser = None

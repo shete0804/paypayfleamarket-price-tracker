@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+"""ヨドバシ.com 専用スクレイピングによる価格チェック.
+
+my_lib.store.yodobashi.scrape を使用して商品ページから価格情報を取得します。
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import TYPE_CHECKING
+
+import my_lib.store.yodobashi
+
+import price_watch.models
+
+if TYPE_CHECKING:
+    from my_lib.browser import Page
+
+    from price_watch.config import AppConfig
+    from price_watch.target import ResolvedItem
+
+
+def check(
+    config: AppConfig,
+    page: Page,
+    item: ResolvedItem,
+) -> price_watch.models.CheckedItem:
+    """ヨドバシ商品ページから価格情報を取得.
+
+    Args:
+        config: アプリケーション設定（現在未使用だが将来の拡張用）
+        page: ブラウザページ
+        item: 監視対象アイテム
+
+    Returns:
+        チェック結果（CheckedItem）
+    """
+    # 結果を格納する CheckedItem を作成
+    result = price_watch.models.CheckedItem.from_resolved_item(item)
+
+    logging.info("[ヨドバシ] %s: スクレイピング開始 - %s", item.name, item.url)
+
+    try:
+        # my_lib.store.yodobashi.scrape を呼び出し
+        product_info = my_lib.store.yodobashi.scrape(page, item.url)
+
+        # 結果を CheckedItem に変換
+        if product_info.price is not None:
+            result.price = product_info.price
+            result.crawl_status = price_watch.models.CrawlStatus.SUCCESS
+            logging.info("[ヨドバシ] %s: 価格取得成功 ¥%s", item.name, f"{product_info.price:,}")
+        elif not product_info.in_stock:
+            # 販売終了/販売休止の場合は価格なしでも成功扱い
+            result.crawl_status = price_watch.models.CrawlStatus.SUCCESS
+            logging.info("[ヨドバシ] %s: 販売終了（価格情報なし）", item.name)
+        else:
+            result.crawl_status = price_watch.models.CrawlStatus.FAILURE
+            logging.warning("[ヨドバシ] %s: 価格取得失敗", item.name)
+
+        # サムネイル URL
+        if product_info.thumbnail_url:
+            result.thumb_url = product_info.thumbnail_url
+
+        # 在庫状態
+        if product_info.in_stock:
+            result.stock = price_watch.models.StockStatus.IN_STOCK
+        else:
+            result.stock = price_watch.models.StockStatus.OUT_OF_STOCK
+            logging.info("[ヨドバシ] %s: 在庫なし", item.name)
+
+    except Exception:
+        logging.exception("[ヨドバシ] %s: スクレイピングエラー", item.name)
+        result.crawl_status = price_watch.models.CrawlStatus.FAILURE
+
+    return result

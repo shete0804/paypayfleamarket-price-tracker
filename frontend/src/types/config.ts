@@ -10,7 +10,8 @@ export type CheckMethod =
     | "my_lib.store.rakuma.search"
     | "my_lib.store.paypay.search"
     | "my_lib.store.yahoo.api"
-    | "my_lib.store.rakuten.api";
+    | "my_lib.store.rakuten.api"
+    | "my_lib.store.yodobashi.scrape";
 
 // アクションタイプの型
 export type ActionType = "click" | "input" | "sixdigit" | "recaptcha";
@@ -135,6 +136,18 @@ export interface CheckJobResult {
     crawl_status: "SUCCESS" | "FAILURE";
 }
 
+// check_method ごとの必須フィールド定義
+// バックエンド (schemas/target.py) と同期を維持すること
+// "url_or_asin": url または asin のいずれかが必要
+// "url": url が必要
+// XPath 系: ストア定義またはアイテムのストアエントリで指定可能
+export const CHECK_METHOD_REQUIRED_FIELDS: Partial<Record<CheckMethod, string[]>> = {
+    scrape: ["url", "price_xpath", "unavailable_xpath", "thumb_img_xpath"],
+    "my_lib.store.amazon.api": ["url_or_asin"],
+    "my_lib.store.yodobashi.scrape": ["url"],
+    // 検索系は URL/ASIN 不要（検索結果から動的に取得）
+};
+
 // チェックメソッドの表示名マッピング
 export const CHECK_METHOD_LABELS: Record<CheckMethod, string> = {
     scrape: "スクレイピング",
@@ -144,6 +157,7 @@ export const CHECK_METHOD_LABELS: Record<CheckMethod, string> = {
     "my_lib.store.paypay.search": "PayPayフリマ検索",
     "my_lib.store.yahoo.api": "Yahoo検索",
     "my_lib.store.rakuten.api": "楽天検索",
+    "my_lib.store.yodobashi.scrape": "ヨドバシ",
 };
 
 // アクションタイプの表示名マッピング
@@ -210,5 +224,26 @@ export interface AmazonSearchResponse {
 }
 
 export interface AmazonSearchAvailableResponse {
+    available: boolean;
+}
+
+// ヨドバシ検索関連
+export interface YodobashiSearchRequest {
+    keywords: string;
+    item_count?: number;
+}
+
+export interface YodobashiSearchResultItem {
+    name: string;
+    url: string;
+    price: number | null;
+    thumb_url: string | null;
+}
+
+export interface YodobashiSearchResponse {
+    items: YodobashiSearchResultItem[];
+}
+
+export interface YodobashiSearchAvailableResponse {
     available: boolean;
 }

@@ -14,9 +14,9 @@ from typing import Any
 
 import my_lib.config
 import my_lib.notify.slack
-# import my_lib.store.amazon.config  # PayPay フリマ専用スクレイパーでは不要
-# import my_lib.store.rakuten.config  # PayPay フリマ専用では不要
-# import my_lib.store.yahoo.config  # PayPay フリマ専用では不要
+import my_lib.store.amazon.credentials
+import my_lib.store.rakuten.credentials
+import my_lib.store.yahoo.credentials
 import my_lib.webapp.config
 
 import price_watch.const
@@ -159,14 +159,27 @@ class CheckConfig:
         )
 
 
+@dataclass(frozen=True)
 class StoreConfig:
-    """ストア設定。PayPay フリマ専用スクレイパーでは API 設定なし（シングルトン）"""
+    """ストア設定"""
+
+    amazon_api: my_lib.store.amazon.credentials.AmazonApiConfig | None = None
+    yahoo_api: my_lib.store.yahoo.credentials.YahooApiConfig | None = None
+    rakuten_api: my_lib.store.rakuten.credentials.RakutenApiConfig | None = None
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> StoreConfig:
         """dict から StoreConfig を生成"""
-        # PayPay フリマ専用では API 設定なし
-        return cls()
+        amazon_api = None
+        if "amazon" in data:
+            amazon_api = my_lib.store.amazon.credentials.AmazonApiConfig.parse(data["amazon"])
+        yahoo_api = None
+        if "yahoo" in data:
+            yahoo_api = my_lib.store.yahoo.credentials.YahooApiConfig.parse(data["yahoo"])
+        rakuten_api = None
+        if "rakuten" in data:
+            rakuten_api = my_lib.store.rakuten.credentials.RakutenApiConfig.parse(data["rakuten"])
+        return cls(amazon_api=amazon_api, yahoo_api=yahoo_api, rakuten_api=rakuten_api)
 
 
 @dataclass(frozen=True)
@@ -229,11 +242,26 @@ class FontMapConfig:
 
 
 @dataclass(frozen=True)
+class ChartFontConfig:
+    """チャート用フォント設定"""
+
+    family: str | None = None
+
+    @classmethod
+    def parse(cls, data: dict[str, Any]) -> ChartFontConfig:
+        """dict から ChartFontConfig を生成"""
+        return cls(
+            family=data.get("family"),
+        )
+
+
+@dataclass(frozen=True)
 class FontConfig:
     """フォント設定"""
 
     path: pathlib.Path | None
     map: FontMapConfig
+    chart: ChartFontConfig
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> FontConfig:
@@ -244,6 +272,7 @@ class FontConfig:
         return cls(
             path=path,
             map=FontMapConfig.parse(data.get("map", {})),
+            chart=ChartFontConfig.parse(data.get("chart", {})),
         )
 
     def get_font_path(self, font_key: str) -> pathlib.Path | None:
@@ -259,6 +288,25 @@ class FontConfig:
         if font_file is None or self.path is None:
             return None
         return self.path / font_file
+
+
+@dataclass(frozen=True)
+class WebPushConfig:
+    """Web Push 設定"""
+
+    vapid_private_key: str
+    vapid_public_key: str
+    vapid_claims_email: str
+
+    @classmethod
+    def parse(cls, data: dict[str, Any]) -> WebPushConfig:
+        """dict から WebPushConfig を生成"""
+        vapid = data.get("vapid", {})
+        return cls(
+            vapid_private_key=vapid["private_key"],
+            vapid_public_key=vapid["public_key"],
+            vapid_claims_email=vapid.get("claims_email", "mailto:admin@example.com"),
+        )
 
 
 @dataclass(frozen=True)
@@ -355,6 +403,7 @@ class AppConfig:
     liveness: LivenessConfig
     edit: EditConfig
     font: FontConfig | None = None
+    webpush: WebPushConfig | None = None
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> AppConfig:
@@ -367,8 +416,10 @@ class AppConfig:
         if "slack" in data:
             slack = my_lib.notify.slack.SlackConfig.parse(data["slack"])
 
-        # Store 設定 (None や null を {} に正規化)
-        store = StoreConfig.parse(data.get("store") or {})
+        # Store 設定
+        store = StoreConfig()
+        if "store" in data:
+            store = StoreConfig.parse(data["store"])
 
         # Data 設定
         data_config = DataConfig.parse(data.get("data", {}))
@@ -390,6 +441,11 @@ class AppConfig:
         if "font" in data:
             font = FontConfig.parse(data["font"])
 
+        # WebPush 設定
+        webpush = None
+        if "webpush" in data:
+            webpush = WebPushConfig.parse(data["webpush"])
+
         return cls(
             check=check,
             slack=slack,
@@ -400,6 +456,7 @@ class AppConfig:
             liveness=liveness,
             edit=edit,
             font=font,
+            webpush=webpush,
         )
 
 
