@@ -1,126 +1,126 @@
-﻿category_list:
-    - 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+category_list:
+    - ポケモンカード
 
 store_list:
-    - name: PayPay繝輔Μ繝・
+    - name: PayPayフリマ
       check_method: my_lib.store.paypay.search
 
 item_list:
-    - name: 繝｡繧ｬ繝ｫ繧ｫ繝ｪ繧ｪex MUR 繝｡繧ｬ繝悶Ξ繧､繝・
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: メガルカリオex MUR メガブレイブ
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繝｡繧ｬ繝ｫ繧ｫ繝ｪ繧ｪex MUR
+          - name: PayPayフリマ
+            search_keyword: メガルカリオex MUR
             cond: NEW|LIKE_NEW
 
-    - name: 繝ｪ繝ｼ繝ｪ繧ｨ縺ｮ豎ｺ蠢・SAR 繝｡繧ｬ繝悶Ξ繧､繝・
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: リーリエの修行 SAR メガブレイブ
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繝ｪ繝ｼ繝ｪ繧ｨ縺ｮ豎ｺ蠢・SAR
+          - name: PayPayフリマ
+            search_keyword: リーリエの修行 SAR
             cond: NEW|LIKE_NEW
 
-    - name: 繧ｻ繝ｬ繝慨AR 繝｡繧ｬ繝悶Ξ繧､繝・
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: セレナSAR メガブレイブ
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繧ｻ繝ｬ繝慨AR
+          - name: PayPayフリマ
+            search_keyword: セレナSAR
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝峨ご繝ｼ繝 繝上う繧ｯ繝ｩ繧ｹ繝代ャ繧ｯ 30蜻ｨ蟷ｴ險伜ｿｵ繝懊ャ繧ｯ繧ｹ
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカードゲーム ハイクラスパック 30周年記念ボックス
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繝上う繧ｯ繝ｩ繧ｹ繝代ャ繧ｯ 30蜻ｨ蟷ｴ
+          - name: PayPayフリマ
+            search_keyword: ハイクラスパック 30周年
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｷ繝｣繧､繝九・繧ｹ繧ｿ繝ｼ V BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード シャイニングスター V BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繧ｷ繝｣繧､繝九・繧ｹ繧ｿ繝ｼ
+          - name: PayPayフリマ
+            search_keyword: シャイニングスター
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繝ｬ繧､繧ｸ繝ｳ繧ｰ繧ｵ繝ｼ繝・BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード レイジングサーフ BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繝ｬ繧､繧ｸ繝ｳ繧ｰ繧ｵ繝ｼ繝・
+          - name: PayPayフリマ
+            search_keyword: レイジングサーフ
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｽ繝ｼ繝・BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード ソード BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繧ｽ繝ｼ繝・BOX 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+          - name: PayPayフリマ
+            search_keyword: ソード BOX ポケモンカード
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｷ繝ｼ繝ｫ繝・BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード シールド BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繧ｷ繝ｼ繝ｫ繝・BOX 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+          - name: PayPayフリマ
+            search_keyword: シールド BOX ポケモンカード
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・Vstar繝ｦ繝九ヰ繝ｼ繧ｹ BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード Vstar ユニバース BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: Vstar繝ｦ繝九ヰ繝ｼ繧ｹ
+          - name: PayPayフリマ
+            search_keyword: Vstar ユニバース
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｹ繝壹・繧ｹ繧ｸ繝｣繧ｰ繝ｩ繝ｼ BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード スペース ジャグラー BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繧ｹ繝壹・繧ｹ繧ｸ繝｣繧ｰ繝ｩ繝ｼ
+          - name: PayPayフリマ
+            search_keyword: スペース ジャグラー
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｿ繧､繝繧ｲ繧､繧ｶ繝ｼ BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード タイムゲイザー BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繧ｿ繧､繝繧ｲ繧､繧ｶ繝ｼ
+          - name: PayPayフリマ
+            search_keyword: タイムゲイザー
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繝代Λ繝繧､繝繝医Μ繧ｬ繝ｼ BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード パラドックスリガー BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繝代Λ繝繧､繝繝医Μ繧ｬ繝ｼ
+          - name: PayPayフリマ
+            search_keyword: パラドックスリガー
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｹ繧ｫ繝ｼ繝ｬ繝・ヨ BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード スカーレット BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繧ｹ繧ｫ繝ｼ繝ｬ繝・ヨ BOX 繝昴こ繝｢繝ｳ
+          - name: PayPayフリマ
+            search_keyword: スカーレット BOX ポケモン
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繝舌う繧ｪ繝ｬ繝・ヨ BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード バイオレット BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繝舌う繧ｪ繝ｬ繝・ヨ BOX 繝昴こ繝｢繝ｳ
+          - name: PayPayフリマ
+            search_keyword: バイオレット BOX ポケモン
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｯ繝ｪ繝繧ｾ繝ｳ繝倥う繧ｺ BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード クリムゾンハイズ BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繧ｯ繝ｪ繝繧ｾ繝ｳ繝倥う繧ｺ
+          - name: PayPayフリマ
+            search_keyword: クリムゾンハイズ
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繧ｪ繝ｼ繝舌Ν繝√ぉ繧､繧ｹ BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード オーバーバル チェイス BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繧ｪ繝ｼ繝舌Ν繝√ぉ繧､繧ｹ
+          - name: PayPayフリマ
+            search_keyword: オーバーバル チェイス
             cond: NEW|LIKE_NEW
 
-    - name: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・繝医Μ繝励Ξ繝・ヨ繝薙・繝・BOX
-      category: 繝昴こ繝｢繝ｳ繧ｫ繝ｼ繝・
+    - name: ポケモンカード トリプレット ビルヂング BOX
+      category: ポケモンカード
       store:
-          - name: PayPay繝輔Μ繝・
-            search_keyword: 繝医Μ繝励Ξ繝・ヨ繝薙・繝・
+          - name: PayPayフリマ
+            search_keyword: トリプレット ビルヂング
             cond: NEW|LIKE_NEW
