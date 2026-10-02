@@ -173,5 +173,5 @@
             "required": ["password_hash"]
         }
     },
-    "required": ["webapp", "edit"]
+    "required": ["check", "slack", "store", "data", "webapp", "target", "liveness", "edit"]
 }
