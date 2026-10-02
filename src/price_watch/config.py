@@ -163,9 +163,8 @@ class CheckConfig:
 class StoreConfig:
     """ストア設定"""
 
-    # amazon_api: my_lib.store.amazon.config.AmazonApiConfig | None = None  # PayPay フリマ専用では不要
-    # yahoo_api: my_lib.store.yahoo.config.YahooApiConfig | None = None  # PayPay フリマ専用では不要
-    # rakuten_api: my_lib.store.rakuten.config.RakutenApiConfig | None = None  # PayPay フリマ専用では不要
+    # PayPay フリマ専用では API 設定なし。ダミーフィールドで dataclass の init を有効化
+    _placeholder: str = ""
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> StoreConfig:
