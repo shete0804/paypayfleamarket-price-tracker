@@ -164,6 +164,7 @@ class StoreConfig:
 
     def __init__(self) -> None:
         """デフォルトコンストラクタ"""
+        pass
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> StoreConfig:
