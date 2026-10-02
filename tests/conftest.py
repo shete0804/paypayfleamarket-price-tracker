@@ -205,12 +205,15 @@ def font_paths() -> "price_watch.webapi.ogp.FontPaths":
     # config.yaml からフォント設定を読み込む
     config_path = pathlib.Path("config.yaml")
     if config_path.exists():
-        config = price_watch.config.load(config_path)
-        if config.font is not None:
-            font_paths = price_watch.webapi.ogp.FontPaths.from_config(config.font)
-            # フォントファイルが存在するか確認
-            if font_paths.jp_medium is not None and font_paths.jp_medium.exists():
-                return font_paths
+        try:
+            config = price_watch.config.load(config_path)
+            if config.font is not None:
+                font_paths = price_watch.webapi.ogp.FontPaths.from_config(config.font)
+                # フォントファイルが存在するか確認
+                if font_paths.jp_medium is not None and font_paths.jp_medium.exists():
+                    return font_paths
+        except Exception:
+            pass  # config 読み込み失敗時はフォールバック
 
     # フォールバック: システムフォントを探す
     for font_path in price_watch.webapi.ogp.JAPANESE_FONT_PATHS:
