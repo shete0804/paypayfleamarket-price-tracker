@@ -72,6 +72,7 @@ jobs:
           EOF
 
       - name: Run Price Watch (Dry Run)
+        working-directory: ${{ github.workspace }}
         run: |
           uv run price-watch \
             -c /tmp/config.yaml \
