@@ -80,7 +80,6 @@ jobs:
           uv run price-watch \
             -c /tmp/config.yaml \
             -t target.yaml \
-            -D \
           2>&1 | tee scraper-output.log || true
 
       - name: Show Output
