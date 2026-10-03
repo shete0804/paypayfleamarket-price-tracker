@@ -285,7 +285,15 @@ def check(
     )
 
     # 結果を設定（アフィリエイトID付与）
-    result.url = price_watch.affiliate.append_affiliate_id(cheapest.url, item.affiliate_id, item.check_method)
+    # 個別ページURLを取得
+    detail_url = cheapest.url
+    if hasattr(cheapest, 'detail_url') and cheapest.detail_url:
+        detail_url = cheapest.detail_url
+    elif hasattr(cheapest, 'item_id') and cheapest.item_id:
+        if item.check_method == price_watch.target.CheckMethod.PAYPAY_SEARCH:
+            detail_url = f"https://paypayfleamarket.yahoo.co.jp/item/{cheapest.item_id}"
+
+    result.url = price_watch.affiliate.append_affiliate_id(detail_url, item.affiliate_id, item.check_method)
     result.price = cheapest.price
     result.stock = price_watch.models.StockStatus.IN_STOCK
     result.crawl_status = price_watch.models.CrawlStatus.SUCCESS
