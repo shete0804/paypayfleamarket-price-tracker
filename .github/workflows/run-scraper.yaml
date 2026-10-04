@@ -44,7 +44,7 @@ jobs:
           check:
               interval_sec: 0
           slack:
-              bot_token: "dummy-token-for-testing"
+              bot_token: "xoxb-dummy-token-for-testing-1234567890"
               from: price-watch
               info:
                   channel:
@@ -54,7 +54,14 @@ jobs:
                       name: "#error"
                       id: "C0123456789"
                   interval_min: 60
-          store: {}
+          store:
+              amazon:
+                  associate: "dummy-22"
+                  credential_id: "dummy_id"
+                  credential_secret: "dummy_secret"
+              yahoo:
+                  client_id: "dummy_client_id"
+                  secret: "dummy_secret"
           data:
               selenium: ./data
               dump: ./data/debug
@@ -62,8 +69,6 @@ jobs:
               thumb: ./data/thumb
               metrics: ./data/metrics
               cache: ./data/cache
-          webapp:
-              static_dir_path: ./static
           target:
               define: target.yaml
           liveness:
