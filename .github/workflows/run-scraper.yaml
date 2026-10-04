@@ -42,7 +42,7 @@ jobs:
         run: |
           cat > /tmp/config.yaml << 'EOF'
           check:
-              interval_sec: 1800
+              interval_sec: 0
           slack:
               bot_token: "dummy-token-for-testing"
               from: price-watch
