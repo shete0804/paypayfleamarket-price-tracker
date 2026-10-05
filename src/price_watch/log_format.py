@@ -160,7 +160,8 @@ def format_item_status(item: CheckedItem) -> str:
     prefix = format_item_prefix(item)
     if item.stock_as_int() == 1:
         price = item.price or 0
-        return f"{EMOJI_IN_STOCK} {prefix}: {price}{item.price_unit}"
+        url_part = f" {item.url}" if item.url else ""
+        return f"{EMOJI_IN_STOCK} {prefix}: {price}{item.price_unit}{url_part}"
     return f"{EMOJI_OUT_OF_STOCK} {prefix}: 在庫なし"
 
 
