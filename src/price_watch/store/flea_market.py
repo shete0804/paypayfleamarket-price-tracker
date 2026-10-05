@@ -293,6 +293,10 @@ def check(
         if item.check_method == price_watch.target.CheckMethod.PAYPAY_SEARCH:
             detail_url = f"https://paypayfleamarket.yahoo.co.jp/item/{cheapest.item_id}"
 
+    # URL をクリーニング（スペース以降を削除）
+    if detail_url and ' ' in detail_url:
+        detail_url = detail_url.split(' ')[0]
+
     result.url = price_watch.affiliate.append_affiliate_id(detail_url, item.affiliate_id, item.check_method)
     result.price = cheapest.price
     result.stock = price_watch.models.StockStatus.IN_STOCK
