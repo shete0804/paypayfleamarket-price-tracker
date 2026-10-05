@@ -129,18 +129,8 @@ class AppRunner:
             # コンテンツ更新をクライアントに通知
             my_lib.webapp.event.notify_event(my_lib.webapp.event.EVENT_TYPE.CONTENT)
 
-            if self.app.should_terminate:
-                break
-
-            self._sleep_until(start_time + self.app.config.check.interval_sec)
-            self._loop += 1
-
-            # 次のサイクル開始前にセッションを更新
-            if not self.app.should_terminate:
-                self.app.metrics_manager.end_session("normal")
-                self.app.metrics_manager.start_session()
-                # 巡回再開を記録（work_ended_at をクリア）
-                self.app.metrics_manager.record_work_started()
+            # 単回実行：ループを 1 回で終了
+            break
 
         # 最終セッションを終了
         self.app.metrics_manager.end_session("terminated")
