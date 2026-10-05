@@ -99,4 +99,6 @@ jobs:
         if: always()
         with:
           name: scraper-output
-          path: scraper-output.log
+          path: |
+            scraper-output.log
+            data/price/price.db
