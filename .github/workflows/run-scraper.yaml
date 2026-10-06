@@ -94,6 +94,15 @@ jobs:
           echo "=== Scraper Output ==="
           cat scraper-output.log
 
+      - name: Extract Top 3 Cheapest Items
+        working-directory: ${{ github.workspace }}
+        run: |
+          echo "=== Top 3 Cheapest メガルカリオex MUR メガブレイブ ==="
+          uv run python src/price_watch/cli/extract_top3.py \
+            --db-path ./data/price/price.db \
+            --keyword "メガルカリオex MUR メガブレイブ" \
+            --limit 3 || echo "Failed to extract top 3 items"
+
       - name: Upload Output
         uses: actions/upload-artifact@v4
         if: always()
