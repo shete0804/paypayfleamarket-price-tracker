@@ -10,68 +10,117 @@ item_list:
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガルカリオex MUR メガブレイブ
+            search_keyword: メガルカリオex MUR
             cond: NEW|LIKE_NEW
 
-    - name: バイオレット BOX
+    - name: リーリエの修行 SAR メガブレイブ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: バイオレット BOX
+            search_keyword: リーリエの修行 SAR
             cond: NEW|LIKE_NEW
 
-    - name: スカーレット BOX
+    - name: セレナSAR メガブレイブ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: スカーレット BOX
+            search_keyword: セレナSAR
             cond: NEW|LIKE_NEW
 
-    - name: タイムゲイザー BOX
+    - name: ポケモンカードゲーム ハイクラスパック 30周年記念ボックス
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: タイムゲイザー BOX
+            search_keyword: ハイクラスパック 30周年
             cond: NEW|LIKE_NEW
 
-    - name: スペース ジャグラー BOX
+    - name: ポケモンカード シャイニングスター V BOX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: スペース ジャグラー BOX
+            search_keyword: シャイニングスター
             cond: NEW|LIKE_NEW
 
-    - name: Vstar ユニバース BOX
+    - name: ポケモンカード レイジングサーフ BOX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: Vstar ユニバース BOX
+            search_keyword: レイジングサーフ
             cond: NEW|LIKE_NEW
 
-    - name: シールド BOX
+    - name: ポケモンカード ソード BOX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: シールド BOX
+            search_keyword: ソード BOX ポケモンカード
             cond: NEW|LIKE_NEW
 
-    - name: ソード BOX
+    - name: ポケモンカード シールド BOX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: ソード BOX
+            search_keyword: シールド BOX ポケモンカード
             cond: NEW|LIKE_NEW
 
-    - name: レイジングサーフ BOX
+    - name: ポケモンカード Vstar ユニバース BOX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: レイジングサーフ BOX
+            search_keyword: Vstar ユニバース
             cond: NEW|LIKE_NEW
 
-    - name: シャイニングスター V BOX
+    - name: ポケモンカード スペース ジャグラー BOX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: シャイニングスター V BOX
+            search_keyword: スペース ジャグラー
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード タイムゲイザー BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: タイムゲイザー
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード パラドックスリガー BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: パラドックスリガー
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード スカーレット BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: スカーレット BOX ポケモン
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード バイオレット BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: バイオレット BOX ポケモン
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード クリムゾンハイズ BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: クリムゾンハイズ
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード オーバーバル チェイス BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: オーバーバル チェイス
+            cond: NEW|LIKE_NEW
+
+    - name: ポケモンカード トリプレット ビルヂング BOX
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: トリプレット ビルヂング
             cond: NEW|LIKE_NEW
