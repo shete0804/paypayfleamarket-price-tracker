@@ -297,6 +297,18 @@ def check(
     if detail_url and ' ' in detail_url:
         detail_url = detail_url.split(' ')[0]
 
+    # TOP3 全件を格納
+    result.top3_items = top3_results
+
+    # TOP3 全件をログ出力（デバッグ用）
+    logging.info("[%s] %s: TOP3全件のデバッグ情報:", label, item.name)
+    for rank, top_item in enumerate(top3_results, 1):
+        all_attrs = vars(top_item)
+        logging.info("  TOP%d attributes: %s", rank, all_attrs)
+        url = getattr(top_item, 'url', getattr(top_item, 'detail_url', 'N/A'))
+        item_id = getattr(top_item, 'item_id', 'N/A')
+        logging.info("  TOP%d: Price=¥%s, Name=%s, URL=%s, ID=%s", rank, f"{top_item.price:,}", top_item.name[:50], url, item_id)
+
     result.url = price_watch.affiliate.append_affiliate_id(detail_url, item.affiliate_id, item.check_method)
     result.price = cheapest.price
     result.stock = price_watch.models.StockStatus.IN_STOCK
