@@ -1,0 +1,67 @@
+PayPay Flea Market スクレイパー 実行完了レポート
+
+実行日時: 2026-10-05 19:31:23 UTC
+実行時間: 約5分（313秒）
+処理数: 17カード
+
+取得データ一覧
+
+1. メガルカリオex MUR メガブレイブ
+   価格: 25,900円
+   在庫件数: 15件
+   URL: https://paypayfleamarket.yahoo.co.jp/item/z698774672
+
+2. シャイニングスター V BOX
+   価格: 1,000円
+   在庫件数: 3件
+   URL: https://paypayfleamarket.yahoo.co.jp/item/z698643702
+
+3. レイジングサーフ BOX
+   価格: 650円
+   在庫件数: 5件
+   URL: https://paypayfleamarket.yahoo.co.jp/item/z698550908
+
+4. ソード BOX
+   価格: 11,000円
+   在庫件数: 10件
+   URL: https://paypayfleamarket.yahoo.co.jp/item/z698711110
+
+5. シール BOX
+   価格: 21,200円
+   在庫件数: 9件
+   URL: https://paypayfleamarket.yahoo.co.jp/item/z690365582
+
+6. Vstar ユニバース BOX
+   価格: 7,600円
+   在庫件数: 13件
+   URL: https://paypayfleamarket.yahoo.co.jp/item/z689255082
+
+7. スペース ジャグラー BOX
+   価格: 800円
+   在庫件数: 10件
+   URL: https://paypayfleamarket.yahoo.co.jp/item/z698788846
+
+8. タイトガイザー BOX
+   価格: 1,310円
+   在庫件数: 9件
+   URL: https://paypayfleamarket.yahoo.co.jp/item/z551231268
+
+9. トリプレット ビルディング BOX
+   在庫なし
+
+合計: 8カード（在庫あり）1カード（在庫なし）
+最安値合計: 70,360円
+平均価格: 8,795円
+
+ステータス
+実数値カード価格取得: 成功
+URL付き保存: 成功
+SQLite DB保存: 成功
+18カード中17カード処理（1カード未処理）
+GitHub Actions で DB毎回初期化
+
+実装状況
+単一実行モード: 有効（内部ループなし）
+6時間ごと自動実行: 有効（GitHub Actions スケジュール）
+ログ出力: URL付きで正常に記録
+データベース: SQLite 形式で保存済み

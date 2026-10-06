@@ -284,6 +284,24 @@ def check(
         cheapest.name,
     )
 
+    # TOP3 をログ出力
+    top3_results = sorted(filtered_results, key=lambda r: r.price)[:3]
+    for rank, result in enumerate(top3_results, 1):
+        url_str = result.url if hasattr(result, 'url') else ''
+        if hasattr(result, 'detail_url') and result.detail_url:
+            url_str = result.detail_url
+        elif hasattr(result, 'item_id') and result.item_id and item.check_method == price_watch.target.CheckMethod.PAYPAY_SEARCH:
+            url_str = f"https://paypayfleamarket.yahoo.co.jp/item/{result.item_id}"
+        logging.info(
+            "[%s] %s TOP%d: ¥%s - %s - %s",
+            label,
+            item.name,
+            rank,
+            f"{result.price:,}",
+            result.name,
+            url_str,
+        )
+
     # 結果を設定（アフィリエイトID付与）
     # 個別ページURLを取得
     detail_url = cheapest.url
