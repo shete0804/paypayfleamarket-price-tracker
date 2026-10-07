@@ -11,232 +11,88 @@ item_list:
       store:
           - name: PayPayフリマ
             search_keyword: メガルカリオex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: リーリエの決心 SAR メガブレイブ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: リーリエの決心
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガサーナイトex MUR メガシンフォニア
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガサーナイトex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガサーナイトex SAR メガシンフォニア
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガサーナイトex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガリザードンXex MUR インフェルノX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガリザードンXex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガリザードンXex SAR インフェルノX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガリザードンXex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガカイリューex MUR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガカイリューex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: ピカチュウex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: ピカチュウex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: ロケット団のミュウツーex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: ロケット団のミュウツーex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガゲンガーex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガゲンガーex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガカイリューex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガカイリューex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガジガルデex MUR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガジガルデex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: ニャースex SAR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: ニャースex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メイのはげまし SAR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メイのはげまし
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガゲッコウガex MUR ニンジャスピナー
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガゲッコウガex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガゲッコウガex SAR ニンジャスピナー
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガゲッコウガex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガダークライex MUR アビスアイ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガダークライex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス
     - name: メガダークライex SAR アビスアイ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガダークライex
-            exclude_keywords:
-              - セット
-              - まとめ売り
-              - デッキパーツ
-              - 4枚
-              - 2枚
-              - 6枚
-              - ボックス

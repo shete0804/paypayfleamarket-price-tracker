@@ -178,27 +178,6 @@ def check(
             result.crawl_status = price_watch.models.CrawlStatus.SUCCESS
             return result
 
-        # 除外キーワードフィルタ
-        if item.exclude_keywords:
-            before_exclude_filter = len(results)
-            results = [
-                r
-                for r in results
-                if not price_watch.store.search_filter.has_excluded_keywords(r.name, item.exclude_keywords)
-            ]
-            if len(results) < before_exclude_filter:
-                logging.info(
-                    "[Yahoo検索] %s: 除外キーワード除外 (%d件 -> %d件)",
-                    item.name,
-                    before_exclude_filter,
-                    len(results),
-                )
-            if not results:
-                logging.info("[Yahoo検索] %s: 除外キーワード後に商品なし", item.name)
-                result.stock = price_watch.models.StockStatus.OUT_OF_STOCK
-                result.crawl_status = price_watch.models.CrawlStatus.SUCCESS
-                return result
-
     # 最安値を探す（API は価格の安い順でソートされているので先頭が最安値）
     cheapest = results[0]
 
