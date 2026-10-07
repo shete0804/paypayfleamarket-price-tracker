@@ -6,9 +6,9 @@ store_list:
       check_method: my_lib.store.paypay.search
 
 item_list:
-    - name: メガルカリオex MUR メガブレイブ
+    - name: リーリエの決心 SAR メガブレイブ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガルカリオex MUR メガブレイブ
+            search_keyword: リーリエの決心 SAR メガブレイブ
             cond: NEW|LIKE_NEW
