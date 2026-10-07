@@ -34,6 +34,22 @@ def extract_top3(
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
+        # テーブル名を自動検出
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [row[0] for row in cursor.fetchall()]
+        logger.info(f"Available tables: {tables}")
+
+        # 価格テーブルを探す（price, prices, price_history, etc.）
+        price_table = None
+        for table_name in ['price', 'prices', 'price_history', 'product_prices']:
+            if table_name in tables:
+                price_table = table_name
+                break
+
+        if not price_table:
+            logger.error(f"No price table found. Available tables: {tables}")
+            return []
+
         # キーワードをスペース区切りで分割
         keywords = keyword.split()
 
@@ -52,11 +68,12 @@ def extract_top3(
 
         # クエリ実行
         query = f"""
-            SELECT price, name, url FROM price
+            SELECT price, name, url FROM {price_table}
             WHERE {where_clause}
             ORDER BY price ASC LIMIT {limit}
         """
 
+        logger.info(f"Using table: {price_table}")
         cursor.execute(query)
         rows = cursor.fetchall()
         conn.close()
