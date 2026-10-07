@@ -235,7 +235,7 @@ class ItemDefinition:
     preload: PreloadConfig | None = None
     # 検索系ストア用（メルカリ・ラクマ・PayPayフリマ・Yahoo）
     search_keyword: str | None = None  # 検索キーワード（省略時は name で検索）
-    exclude_keyword: str | None = None  # 除外キーワード（フリマ検索用）
+    exclude_keywords: list[str] | None = None  # 除外キーワードリスト（フリマ検索用）
     price_range: list[int] | None = None  # [min] or [min, max]
     cond: str | None = None  # フリマ: "NEW|LIKE_NEW" 形式、Yahoo: "new" or "used"
     jan_code: str | None = None  # JANコード（Yahoo検索用）
@@ -268,7 +268,7 @@ class ItemDefinition:
             price_unit=data.get("price_unit"),
             preload=preload,
             search_keyword=data.get("search_keyword"),
-            exclude_keyword=data.get("exclude_keyword"),
+            exclude_keywords=data.get("exclude_keywords"),
             price_range=price_range,
             cond=data.get("cond"),
             jan_code=data.get("jan_code"),
@@ -310,7 +310,7 @@ class ItemDefinition:
                 "price",
                 "cond",
                 "search_keyword",
-                "exclude_keyword",
+                "exclude_keywords",
                 "jan_code",
                 "preload",
                 "price_xpath",
@@ -346,7 +346,7 @@ class ResolvedItem:
     preload: PreloadConfig | None = None
     # メルカリ検索・Yahoo検索用
     search_keyword: str | None = None
-    exclude_keyword: str | None = None  # メルカリのみ
+    exclude_keywords: list[str] | None = None  # 除外キーワードリスト
     price_range: list[int] | None = None
     cond: str | None = None
     jan_code: str | None = None  # Yahoo検索用
@@ -411,7 +411,7 @@ class ResolvedItem:
             actions=store_actions,
             preload=item.preload,
             search_keyword=item.search_keyword,
-            exclude_keyword=item.exclude_keyword,
+            exclude_keywords=item.exclude_keywords,
             price_range=item.price_range,
             cond=item.cond,
             jan_code=item.jan_code,
