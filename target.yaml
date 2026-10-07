@@ -15,7 +15,7 @@ item_list:
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: リーリエの決心
+            search_keyword: リーリエの決心 SAR
     - name: メガサーナイトex MUR メガシンフォニア
       category: ポケモンカード
       store:
@@ -40,22 +40,22 @@ item_list:
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガカイリューex
+            search_keyword: メガカイリューex MUR
     - name: ピカチュウex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: ピカチュウex
+            search_keyword: ピカチュウex SAR
     - name: ロケット団のミュウツーex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: ロケット団のミュウツーex
+            search_keyword: ロケット団のミュウツーex SAR
     - name: メガゲンガーex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガゲンガーex
+            search_keyword: メガゲンガーex SAR
     - name: メガカイリューex SAR MEGAドリームex
       category: ポケモンカード
       store:
@@ -70,12 +70,12 @@ item_list:
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: ニャースex
+            search_keyword: ニャースex SAR
     - name: メイのはげまし SAR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メイのはげまし
+            search_keyword: メイのはげまし SAR
     - name: メガゲッコウガex MUR ニンジャスピナー
       category: ポケモンカード
       store:
