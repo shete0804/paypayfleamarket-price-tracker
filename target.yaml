@@ -18,29 +18,29 @@ item_list:
           - name: PayPayフリマ
             search_keyword: リーリエの決心 SAR メガブレイブ
             cond: NEW|LIKE_NEW
-    - name: メザンサティex MUR メガシンフォーニア
+    - name: メガサーナイトex MUR メガシンフォニア
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メザンサティex MUR メガシンフォーニア
+            search_keyword: メガサーナイトex MUR メガシンフォニア
             cond: NEW|LIKE_NEW
-    - name: メザンサティex SAR メガシンフォーニア
+    - name: メガサーナイトex SAR メガシンフォニア
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メザンサティex SAR メガシンフォーニア
+            search_keyword: メガサーナイトex SAR メガシンフォニア
             cond: NEW|LIKE_NEW
-    - name: メガリザードンxex MUR インフェルノ
+    - name: メガリザードンXex MUR インフェルノX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガリザードンxex MUR インフェルノ
+            search_keyword: メガリザードンXex MUR インフェルノX
             cond: NEW|LIKE_NEW
-    - name: メガリザードンxex SAR インフェルノ
+    - name: メガリザードンXex SAR インフェルノX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガリザードンxex SAR インフェルノ
+            search_keyword: メガリザードンXex SAR インフェルノX
             cond: NEW|LIKE_NEW
     - name: メガカイリューex MUR MEGAドリームex
       category: ポケモンカード
@@ -60,39 +60,57 @@ item_list:
           - name: PayPayフリマ
             search_keyword: ロケット団のミュウツーex SAR MEGAドリームex
             cond: NEW|LIKE_NEW
-    - name: メガゴリラーex SAR MEGAドリームex
+    - name: メガゲンガーex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガゴリラーex SAR MEGAドリームex
+            search_keyword: メガゲンガーex SAR MEGAドリームex
             cond: NEW|LIKE_NEW
-    - name: メガカイリューーex SAR MEGAドリームex
+    - name: メガカイリューex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガカイリューーex SAR MEガドリームex
+            search_keyword: メガカイリューex SAR MEGAドリームex
             cond: NEW|LIKE_NEW
-    - name: メガかいりゅうex MUR ムーキエゼロ
+    - name: メガジガルデex MUR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガかいりゅうex MUR ムーキエゼロ
+            search_keyword: メガジガルデex MUR ムニキスゼロ
             cond: NEW|LIKE_NEW
-    - name: ニャースex SAR ムーキエゼロ
+    - name: ニャースex SAR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: ニャースex SAR ムーキエゼロ
+            search_keyword: ニャースex SAR ムニキスゼロ
             cond: NEW|LIKE_NEW
-    - name: メイのはげまし SAR ムーキエゼロ
+    - name: メイのはげまし SAR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メイのはげまし SAR ムーキエゼロ
+            search_keyword: メイのはげまし SAR ムニキスゼロ
             cond: NEW|LIKE_NEW
-    - name: メガゲッコウジex MUR ニンジャスピーサー
+    - name: メガゲッコウガex MUR ニンジャスピナー
       category: ポケモンカード
       store:
           - name: PayPayフリマ
-            search_keyword: メガゲッコウジex MUR ニンジャスピーサー
+            search_keyword: メガゲッコウガex MUR ニンジャスピナー
+            cond: NEW|LIKE_NEW
+    - name: メガゲッコウガex SAR ニンジャスピナー
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガゲッコウガex SAR ニンジャスピナー
+            cond: NEW|LIKE_NEW
+    - name: メガダークライex MUR アビスアイ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガダークライex MUR アビスアイ
+            cond: NEW|LIKE_NEW
+    - name: メガダークライex SAR アビスアイ
+      category: ポケモンカード
+      store:
+          - name: PayPayフリマ
+            search_keyword: メガダークライex SAR アビスアイ
             cond: NEW|LIKE_NEW
