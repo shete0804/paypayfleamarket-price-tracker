@@ -67,10 +67,13 @@ def extract_top3(
                     where_clause += f" AND name NOT LIKE '%{exclude_kw}%'"
 
         # クエリ実行
+        # price_history は item_id を持つため、items テーブルと JOIN
         query = f"""
-            SELECT price, name, url FROM {price_table}
+            SELECT DISTINCT p.price, i.name, i.url
+            FROM {price_table} p
+            JOIN items i ON p.item_id = i.id
             WHERE {where_clause}
-            ORDER BY price ASC LIMIT {limit}
+            ORDER BY p.price ASC LIMIT {limit}
         """
 
         logger.info(f"Using table: {price_table}")
