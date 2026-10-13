@@ -15,6 +15,7 @@ import my_lib.store.rakuma.search
 import price_watch.affiliate
 import price_watch.history
 import price_watch.models
+import price_watch.store.paypay_search
 import price_watch.store.search_filter
 import price_watch.target
 
@@ -39,7 +40,7 @@ _STORE_SEARCH_FUNCS: dict[
 ] = {
     price_watch.target.CheckMethod.MERCARI_SEARCH: (my_lib.store.mercari.search.search, "メルカリ検索"),
     price_watch.target.CheckMethod.RAKUMA_SEARCH: (my_lib.store.rakuma.search.search, "ラクマ検索"),
-    price_watch.target.CheckMethod.PAYPAY_SEARCH: (my_lib.store.paypay.search.search, "PayPay検索"),
+    price_watch.target.CheckMethod.PAYPAY_SEARCH: (price_watch.store.paypay_search.search, "PayPay検索"),
 }
 
 # ストアごとのウォームアップ関数
@@ -265,6 +266,21 @@ def check(
             before_keyword_filter,
             len(filtered_results),
         )
+
+    exclude_terms = price_watch.store.paypay_search.split_exclude_keywords(condition.exclude_keyword)
+    if exclude_terms:
+        before_exclude = len(filtered_results)
+        filtered_results = [
+            r for r in filtered_results if not any(term in r.name for term in exclude_terms)
+        ]
+        if len(filtered_results) < before_exclude:
+            logging.info(
+                "[%s] %s: 除外キーワードを含む商品を除外 (%d件 -> %d件)",
+                label,
+                item.name,
+                before_exclude,
+                len(filtered_results),
+            )
 
     if not filtered_results:
         logging.info("[%s] %s: 条件に一致する商品なし", label, item.name)
