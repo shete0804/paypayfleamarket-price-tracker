@@ -11,89 +11,106 @@ item_list:
       store:
           - name: PayPayフリマ
             search_keyword: メガルカリオ MUR
-            exclude_keyword: パック,セット,デッキパーツ,PSA
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: リーリエの決心 SAR メガブレイブ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: リーリエの決心 SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガサーナイトex MUR メガシンフォニア
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガサーナイト MUR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガサーナイトex SAR メガシンフォニア
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガサーナイト SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガリザードンXex MUR インフェルノX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガリザードンX MUR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガリザードンXex SAR インフェルノX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガリザードンX SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガカイリューex MUR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガカイリュー MUR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: ピカチュウex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: ピカチュウ SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: ロケット団のミュウツーex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: ロケット団のミュウツー SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガゲンガーex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガゲンガー SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガカイリューex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガカイリュー SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガジガルデex MUR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガジガルデ MUR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: ニャースex SAR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: ニャース SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メイのはげまし SAR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メイのはげまし SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガゲッコウガex MUR ニンジャスピナー
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガゲッコウガ MUR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガゲッコウガex SAR ニンジャスピナー
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガゲッコウガ SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガダークライex MUR アビスアイ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガダークライ MUR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
     - name: メガダークライex SAR アビスアイ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガダークライ SAR
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA
