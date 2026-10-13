@@ -135,12 +135,23 @@ def start_file_watcher() -> None:
 
 
 def stop_file_watcher() -> None:
-    """ファイル監視を停止."""
+    """ファイル監視を停止.
+
+    停止処理が返ってこない場合（watchdog 側で固まることがある）に備え、
+    10 秒だけ待って先へ進む。ファイル監視は画面用の機能なので、待たずに終了しても問題ない。
+    """
     global _file_watcher
     if _file_watcher is not None:
-        _file_watcher.stop()
+        watcher = _file_watcher
         _file_watcher = None
-        logging.info("Stopped file watcher for target.yaml")
+
+        stopper = threading.Thread(target=watcher.stop, daemon=True)
+        stopper.start()
+        stopper.join(timeout=10)
+        if stopper.is_alive():
+            logging.warning("File watcher did not stop within 10 sec; continuing shutdown")
+        else:
+            logging.info("Stopped file watcher for target.yaml")
 
 
 def get_target_config() -> price_watch.target.TargetConfig | None:
