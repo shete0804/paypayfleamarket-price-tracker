@@ -163,7 +163,10 @@ def search(
     results: list[my_lib.store.flea_market.SearchResult] = []
     parsed_urls: set[str] = set()
 
-    for i, item_element in enumerate(page.find_all(Xpath(_ITEM_LIST_XPATH))):
+    item_elements = page.find_all(Xpath(_ITEM_LIST_XPATH))
+    logging.info("[PayPay] 画面上の商品リンク数: %d", len(item_elements))
+
+    for i, item_element in enumerate(item_elements):
         if max_items is not None and len(results) >= max_items:
             break
 
@@ -177,6 +180,8 @@ def search(
                 continue
 
         result = _parse_search_item(item_element)
+        if result is None:
+            logging.info("[PayPay] 解析失敗 %d: %s", i + 1, (item_element.text or "")[:60].replace("\n", " "))
         if result is not None and result.url not in parsed_urls:
             results.append(result)
             parsed_urls.add(result.url)
