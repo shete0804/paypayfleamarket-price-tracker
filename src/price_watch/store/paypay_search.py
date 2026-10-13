@@ -164,6 +164,12 @@ def search(
     parsed_urls: set[str] = set()
 
     item_elements = page.find_all(Xpath(_ITEM_LIST_XPATH))
+    previous_count = -1
+    while item_elements and len(item_elements) != previous_count and len(item_elements) < (max_items or 1000):
+        previous_count = len(item_elements)
+        item_elements[-1].scroll_into_view()
+        time.sleep(2)
+        item_elements = page.find_all(Xpath(_ITEM_LIST_XPATH))
     logging.info("[PayPay] 画面上の商品リンク数: %d", len(item_elements))
 
     for i, item_element in enumerate(item_elements):
