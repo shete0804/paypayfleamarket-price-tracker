@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import TYPE_CHECKING, Any
 
 import my_lib.store.flea_market
@@ -268,6 +269,13 @@ def check(
         )
 
     exclude_terms = price_watch.store.paypay_search.split_exclude_keywords(condition.exclude_keyword)
+    if "レア度必須" in exclude_terms:
+        exclude_terms.remove("レア度必須")
+        rarity_pattern = re.compile(r"(?<![A-Za-z])(SA|SAR|SR|UR|MUR|RR|RRR|AR|HR|CSR|SSR|BWR|CHR|S|A)(?![A-Za-z])")
+        before_rarity = len(filtered_results)
+        filtered_results = [r for r in filtered_results if rarity_pattern.search(r.name)]
+        if len(filtered_results) < before_rarity:
+            logging.info("[%s] %s: レア度の記載がない商品を除外 (%d件 -> %d件)", label, item.name, before_rarity, len(filtered_results))
     if exclude_terms:
         before_exclude = len(filtered_results)
         filtered_results = [
