@@ -276,6 +276,13 @@ def check(
         filtered_results = [r for r in filtered_results if rarity_pattern.search(r.name)]
         if len(filtered_results) < before_rarity:
             logging.info("[%s] %s: レア度の記載がない商品を除外 (%d件 -> %d件)", label, item.name, before_rarity, len(filtered_results))
+    if "SA必須" in exclude_terms:
+        exclude_terms.remove("SA必須")
+        sa_pattern = re.compile(r"(?<![A-Za-z])SA(?![A-Za-z])")
+        before_sa = len(filtered_results)
+        filtered_results = [r for r in filtered_results if sa_pattern.search(r.name)]
+        if len(filtered_results) < before_sa:
+            logging.info("[%s] %s: SAの記載がない商品を除外 (%d件 -> %d件)", label, item.name, before_sa, len(filtered_results))
     if exclude_terms:
         before_exclude = len(filtered_results)
         filtered_results = [
