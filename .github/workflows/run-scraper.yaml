@@ -97,10 +97,10 @@ jobs:
       - name: Extract Top 3 Cheapest Items
         working-directory: ${{ github.workspace }}
         run: |
-          echo "=== Top 3 Cheapest メガルカリオex MUR メガブレイブ ==="
+          echo "=== Top 3 Cheapest: メガルカリオ MUR ==="
           uv run python src/price_watch/cli/extract_top3.py \
             --db-path ./data/price/price.db \
-            --keyword "メガルカリオex MUR メガブレイブ" \
+            --keyword "メガルカリオ MUR" \
             --exclude "セット,パック,デッキパーツ" \
             --limit 3 || echo "Failed to extract top 3 items"
 
