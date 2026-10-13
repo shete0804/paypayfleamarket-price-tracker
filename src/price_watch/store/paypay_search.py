@@ -182,4 +182,5 @@ def search(
             parsed_urls.add(result.url)
 
     logging.info("[PayPay] 検索完了: %d 件", len(results))
+    logging.info("[PayPay] 取得順の価格: %s", [r.price for r in results])
     return results

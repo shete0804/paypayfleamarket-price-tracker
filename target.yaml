@@ -11,7 +11,7 @@ item_list:
       store:
           - name: PayPayフリマ
             search_keyword: メガルカリオ MUR
-            exclude_keyword: パック,セット,デッキパーツ
+            exclude_keyword: パック,セット,デッキパーツ,PSA
     - name: リーリエの決心 SAR メガブレイブ
       category: ポケモンカード
       store:
