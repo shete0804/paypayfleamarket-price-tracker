@@ -11,106 +11,106 @@ item_list:
       store:
           - name: PayPayフリマ
             search_keyword: メガルカリオ MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: リーリエの決心 SAR メガブレイブ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: リーリエの決心 SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガサーナイトex MUR メガシンフォニア
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガサーナイト MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガサーナイトex SAR メガシンフォニア
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガサーナイト SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガリザードンXex MUR インフェルノX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガリザードンX MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガリザードンXex SAR インフェルノX
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガリザードンX SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガカイリューex MUR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガカイリュー MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: ピカチュウex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: ピカチュウ SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: ロケット団のミュウツーex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: ロケット団のミュウツー SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガゲンガーex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガゲンガー SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガカイリューex SAR MEGAドリームex
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガカイリュー SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガジガルデex MUR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガジガルデ MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: ニャースex SAR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: ニャース SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メイのはげまし SAR ムニキスゼロ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メイのはげまし SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガゲッコウガex MUR ニンジャスピナー
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガゲッコウガ MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガゲッコウガex SAR ニンジャスピナー
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガゲッコウガ SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガダークライex MUR アビスアイ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガダークライ MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
     - name: メガダークライex SAR アビスアイ
       category: ポケモンカード
       store:
           - name: PayPayフリマ
             search_keyword: メガダークライ SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,Box,ボックス,スリーブ付き
+            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク
