@@ -85,7 +85,7 @@ jobs:
       - name: Run Price Watch (Dry Run)
         working-directory: ${{ github.workspace }}
         run: |
-          uv run price-watch \
+          timeout -k 60 900 uv run price-watch \
             -c /tmp/config.yaml \
             -t target.yaml \
           2>&1 | tee scraper-output.log || true
