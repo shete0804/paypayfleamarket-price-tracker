@@ -57,9 +57,6 @@ def build_search_url(condition: my_lib.store.flea_market.SearchCondition) -> str
     if condition.price_max is not None:
         params["maxPrice"] = str(condition.price_max)
 
-    if condition.condition:
-        params["conditions"] = ",".join(_CONDITION_PARAM_MAP[cond] for cond in condition.condition)
-
     query = "&".join(f"{urllib.parse.quote(k)}={urllib.parse.quote(v)}" for k, v in params.items())
     return f"{url}?{query}"
 
