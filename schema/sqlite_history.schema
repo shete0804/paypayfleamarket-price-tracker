@@ -25,6 +25,17 @@ CREATE TABLE IF NOT EXISTS price_history(
     FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS top3_history(
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_id      INTEGER NOT NULL,
+    rank         INTEGER NOT NULL,
+    price        INTEGER NOT NULL,
+    name         TEXT NOT NULL,
+    url          TEXT,
+    time         TIMESTAMP DEFAULT(DATETIME('now','localtime')),
+    FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS events(
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
     item_id        INTEGER NOT NULL,

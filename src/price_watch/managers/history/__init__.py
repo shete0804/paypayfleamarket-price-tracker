@@ -402,6 +402,8 @@ class HistoryManager:
             item.stock.to_int(),
             crawl_status,
         )
+        if item.top3_items:
+            self.prices.insert_top3(item_id, item.top3_items)
 
     def insert_checked_item(self, item: CheckedItem) -> int:
         """CheckedItem から価格履歴を挿入.

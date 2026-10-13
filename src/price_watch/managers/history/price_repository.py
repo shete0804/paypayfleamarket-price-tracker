@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import my_lib.time
 
@@ -261,6 +261,22 @@ class PriceRepository:
                     (item_id, new_price, new_stock, crawl_status, now_str),
                 )
 
+            conn.commit()
+
+    def insert_top3(self, item_id: int, top3_items: list[Any]) -> None:
+        """フリマ検索の最安 TOP3 を1件1行で挿入する."""
+        now_str = my_lib.time.now().strftime("%Y-%m-%d %H:%M:%S")
+        with self.db.connect() as conn:
+            conn.executemany(
+                """
+                INSERT INTO top3_history (item_id, rank, price, name, url, time)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                [
+                    (item_id, rank, top.price, top.name, top.url, now_str)
+                    for rank, top in enumerate(top3_items, 1)
+                ],
+            )
             conn.commit()
 
     def get_last(

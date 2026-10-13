@@ -8,7 +8,7 @@ dict[str, Any] の代わりにこれらのクラスを使用することで、
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
@@ -97,6 +97,8 @@ class CheckedItem:
     asin: str | None = None
     # 過去の価格（イベント判定用）
     old_price: int | None = None
+    # フリマ検索の最安 TOP3
+    top3_items: list[Any] = field(default_factory=list)
 
     def is_success(self) -> bool:
         """クロール成功かどうかを返す."""
