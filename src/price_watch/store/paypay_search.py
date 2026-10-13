@@ -156,6 +156,7 @@ def search(
     logging.debug("[PayPay] 検索URL: %s", url)
 
     page.goto(url)
+    logging.info("[PayPay] 到着URL: %s", page.url)
 
     if not _wait_for_search_results(page):
         return []
@@ -171,6 +172,8 @@ def search(
         time.sleep(2)
         item_elements = page.find_all(Xpath(_ITEM_LIST_XPATH))
     logging.info("[PayPay] 画面上の商品リンク数: %d", len(item_elements))
+    body = page.find(Xpath("//body"))
+    logging.info("[PayPay] 本文の冒頭: %s", ((body.text if body else "") or "")[:400].replace("\n", " / "))
 
     for i, item_element in enumerate(item_elements):
         if max_items is not None and len(results) >= max_items:
