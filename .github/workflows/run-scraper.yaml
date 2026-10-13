@@ -81,28 +81,12 @@ jobs:
               password_hash: "$argon2id$v=19$m=65536,t=3,p=4$G3sQ/+Jkh/ufAWCJDUTaPw$8wl44G3QrQysWT9mIDLD3bf0fLn0o/RO1EnYVVovyLs"
           EOF
 
-      - name: Narrow Target To Test Cards
-        working-directory: ${{ github.workspace }}
-        run: |
-          uv run python - <<'EOF'
-          import yaml
-          with open("target.yaml", encoding="utf-8") as f:
-              data = yaml.safe_load(f)
-          test_keywords = {"メガサーナイト MUR", "メガジガルデ MUR", "メガダークライ MUR"}
-          data["item_list"] = [
-              item for item in data["item_list"]
-              if item["store"][0]["search_keyword"] in test_keywords
-          ]
-          with open("/tmp/target_test.yaml", "w", encoding="utf-8") as f:
-              yaml.safe_dump(data, f, allow_unicode=True)
-          EOF
-
       - name: Run Price Watch (Dry Run)
         working-directory: ${{ github.workspace }}
         run: |
           uv run price-watch \
             -c /tmp/config.yaml \
-            -t /tmp/target_test.yaml \
+            -t target.yaml \
           2>&1 | tee scraper-output.log || true
 
       - name: Show Output
