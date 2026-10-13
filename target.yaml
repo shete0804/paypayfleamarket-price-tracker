@@ -6,30 +6,6 @@ store_list:
       check_method: my_lib.store.paypay.search
 
 item_list:
-    - name: メガルカリオex MUR メガブレイブ
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガルカリオ MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: リーリエの決心 SAR メガブレイブ
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: リーリエの決心 SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガサーナイトex MUR メガシンフォニア
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガサーナイト MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガサーナイトex SAR メガシンフォニア
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガサーナイト SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
     - name: メガリザードンXex MUR インフェルノX
       category: ポケモンカード
       store:
@@ -41,78 +17,6 @@ item_list:
       store:
           - name: PayPayフリマ
             search_keyword: メガリザードンX SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガカイリューex MUR MEGAドリームex
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガカイリュー MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: ピカチュウex SAR MEGAドリームex
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: ピカチュウ SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: ロケット団のミュウツーex SAR MEGAドリームex
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: ロケット団のミュウツー SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガゲンガーex SAR MEGAドリームex
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガゲンガー SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガカイリューex SAR MEGAドリームex
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガカイリュー SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガジガルデex MUR ムニキスゼロ
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガジガルデ MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: ニャースex SAR ムニキスゼロ
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: ニャース SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メイのはげまし SAR ムニキスゼロ
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メイのはげまし SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガゲッコウガex MUR ニンジャスピナー
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガゲッコウガ MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガゲッコウガex SAR ニンジャスピナー
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガゲッコウガ SAR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガダークライex MUR アビスアイ
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガダークライ MUR
-            exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
-    - name: メガダークライex SAR アビスアイ
-      category: ポケモンカード
-      store:
-          - name: PayPayフリマ
-            search_keyword: メガダークライ SAR
             exclude_keyword: 未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,PSA,英語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,まとめ,ロット
     - name: ミュウ 30th 赤・青・緑（RGB）
       category: ポケモンカード
