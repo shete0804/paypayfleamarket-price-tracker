@@ -252,6 +252,11 @@ def check(
                 len(filtered_results),
             )
 
+    # 検索で取れた全商品をログに出す（後から手で照合できるように）
+    logging.info("[%s] %s: 検索で取れた全商品 %d 件", label, item.name, len(filtered_results))
+    for raw in filtered_results:
+        logging.info("[%s] %s: 全商品 ¥%s | %s", label, item.name, f"{raw.price:,}", raw.name[:60])
+
     # キーワード全断片一致フィルタ
     before_keyword_filter = len(filtered_results)
     filtered_results = [
