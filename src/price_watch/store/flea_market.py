@@ -230,7 +230,8 @@ def check(
         )
         logging.info("[%s] %s: 検索語「%s」で %d 件取得", label, item.name, kw, len(kw_results))
         for r in kw_results:
-            if r.url not in seen_urls:
+            # 検索語ごとに、その検索語の言葉が名前にあるものだけを採用する（別の検索語の混入を防ぐ）
+            if price_watch.store.search_filter.matches_all_keywords(r.name, kw) and r.url not in seen_urls:
                 seen_urls.add(r.url)
                 results.append(r)
 
@@ -285,6 +286,34 @@ def check(
         )
 
     exclude_terms = price_watch.store.paypay_search.split_exclude_keywords(condition.exclude_keyword)
+
+    # 「説明:SAR」の指定：名前にレア度がない出品は、商品ページの説明文に SAR と書いてあるかを確かめて、あれば合格にする
+    description_terms = [t[len("説明:") :] for t in exclude_terms if t.startswith("説明:")]
+    exclude_terms = [t for t in exclude_terms if not t.startswith("説明:")]
+    if description_terms:
+        name_rarity = re.compile(r"(?<![A-Za-z])(SA|SAR|SR|UR|MUR|RR|RRR|AR|HR|CSR|SSR|BWR|CHR|S|A)(?![A-Za-z])")
+        candidates = sorted(
+            [r for r in filtered_results if not name_rarity.search(r.name)], key=lambda r: r.price
+        )[:10]
+        passed_urls: set[str] = set()
+        for cand in candidates:
+            page.goto(cand.url)
+            description = page.evaluate("document.body.innerText") or ""
+            if any(term in description for term in description_terms):
+                passed_urls.add(cand.url)
+        before_description = len(filtered_results)
+        filtered_results = [
+            r for r in filtered_results if name_rarity.search(r.name) or r.url in passed_urls
+        ]
+        logging.info(
+            "[%s] %s: 名前にレア度がない商品 %d 件を商品ページで確認 (%d件 -> %d件)",
+            label,
+            item.name,
+            len(candidates),
+            before_description,
+            len(filtered_results),
+        )
+
     if "レア度必須" in exclude_terms:
         exclude_terms.remove("レア度必須")
         rarity_pattern = re.compile(r"(?<![A-Za-z])(SA|SAR|SR|UR|MUR|RR|RRR|AR|HR|CSR|SSR|BWR|CHR|S|A)(?![A-Za-z])")
