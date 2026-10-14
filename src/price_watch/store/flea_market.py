@@ -293,8 +293,8 @@ def check(
         if len(filtered_results) < before_rarity:
             logging.info("[%s] %s: レア度の記載がない商品を除外 (%d件 -> %d件)", label, item.name, before_rarity, len(filtered_results))
     # 「番号119」は、カード番号「119/...」の商品も合格にする指定（SA の文字がなくても、同じカードを取れるように）
-    card_numbers = [t[2:] for t in exclude_terms if t.startswith("番号")]
-    exclude_terms = [t for t in exclude_terms if not t.startswith("番号")]
+    card_numbers = [t[2:] for t in exclude_terms if t.startswith("番号") and not t.startswith("番号:")]
+    exclude_terms = [t for t in exclude_terms if not t.startswith("番号") or t.startswith("番号:")]
     if "SA必須" in exclude_terms:
         exclude_terms.remove("SA必須")
         sa_pattern = re.compile(r"(?<![A-Za-z])SA(?![A-Za-z])")
