@@ -308,7 +308,7 @@ def check(
     if exclude_terms:
         before_exclude = len(filtered_results)
         filtered_results = [
-            r for r in filtered_results if not any(term in r.name for term in exclude_terms)
+            r for r in filtered_results if not any(term.removeprefix("名:") in r.name for term in exclude_terms)
         ]
         if len(filtered_results) < before_exclude:
             logging.info(
