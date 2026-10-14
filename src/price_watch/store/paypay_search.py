@@ -166,6 +166,7 @@ def search(
     stalled_count = 0
     while item_elements and len(item_elements) < (max_items or 1000) and stalled_count < 3:
         previous_count = len(item_elements)
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         item_elements[-1].scroll_into_view()
         time.sleep(2)
         item_elements = page.find_all(Xpath(_ITEM_LIST_XPATH))
