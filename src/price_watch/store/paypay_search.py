@@ -161,13 +161,15 @@ def search(
     results: list[my_lib.store.flea_market.SearchResult] = []
     parsed_urls: set[str] = set()
 
+    # 下にスクロールすると続きが読み込まれるが、1回増えなかっただけでは止めない（最大3回まで再試行）
     item_elements = page.find_all(Xpath(_ITEM_LIST_XPATH))
-    previous_count = -1
-    while item_elements and len(item_elements) != previous_count and len(item_elements) < (max_items or 1000):
+    stalled_count = 0
+    while item_elements and len(item_elements) < (max_items or 1000) and stalled_count < 3:
         previous_count = len(item_elements)
         item_elements[-1].scroll_into_view()
         time.sleep(2)
         item_elements = page.find_all(Xpath(_ITEM_LIST_XPATH))
+        stalled_count = stalled_count + 1 if len(item_elements) == previous_count else 0
     logging.info("[PayPay] 画面上の商品リンク数: %d", len(item_elements))
     body = page.find(Xpath("//body"))
     logging.info("[PayPay] 本文の冒頭: %s", ((body.text if body else "") or "")[:400].replace("\n", " / "))
