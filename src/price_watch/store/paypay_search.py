@@ -173,7 +173,10 @@ def search(
         stalled_count = stalled_count + 1 if len(item_elements) == previous_count else 0
     logging.info("[PayPay] 画面上の商品リンク数: %d", len(item_elements))
     body = page.find(Xpath("//body"))
-    logging.info("[PayPay] 本文の冒頭: %s", ((body.text if body else "") or "")[:400].replace("\n", " / "))
+    body_text = (body.text if body else "") or ""
+    logging.info("[PayPay] 本文の冒頭: %s", body_text[:400].replace("\n", " / "))
+    count_match = re.search(r"[\d,~〜]+件/[\d,]+件", body_text)
+    logging.info("[PayPay] 件数表示: %s", count_match.group(0) if count_match else "見つからない")
 
     for i, item_element in enumerate(item_elements):
         if max_items is not None and len(results) >= max_items:
