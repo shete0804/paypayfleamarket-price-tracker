@@ -164,7 +164,7 @@ def search(
     # 下にスクロールすると続きが読み込まれるが、1回増えなかっただけでは止めない（最大3回まで再試行）
     item_elements = page.find_all(Xpath(_ITEM_LIST_XPATH))
     stalled_count = 0
-    while item_elements and len(item_elements) < (max_items or 1000) and stalled_count < 3:
+    while item_elements and len(item_elements) < (max_items or 1000) and stalled_count < 6:
         previous_count = len(item_elements)
         page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         item_elements[-1].scroll_into_view()
