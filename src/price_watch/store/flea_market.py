@@ -299,11 +299,11 @@ def check(
         for cand in candidates:
             page.goto(cand.url)
             description = page.evaluate("document.body.innerText") or ""
-            if any(term in description for term in description_terms):
+            if any(f"[{term}]" in description for term in description_terms):
                 passed_urls.add(cand.url)
         before_description = len(filtered_results)
         filtered_results = [
-            r for r in filtered_results if name_rarity.search(r.name) or r.url in passed_urls
+            r for r in filtered_results if any(term in r.name for term in description_terms) or r.url in passed_urls
         ]
         logging.info(
             "[%s] %s: 名前にレア度がない商品 %d 件を商品ページで確認 (%d件 -> %d件)",
