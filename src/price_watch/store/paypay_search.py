@@ -44,7 +44,7 @@ def build_search_url(condition: my_lib.store.flea_market.SearchCondition) -> str
 
     url = f"{_SEARCH_BASE_URL}/{urllib.parse.quote(keyword)}"
 
-    params: dict[str, str] = {"sort": "price", "order": "asc"}
+    params: dict[str, str] = {"sort": "price", "order": "asc", "withSpeller": "0"}
 
     if condition.sale_status == my_lib.store.flea_market.SaleStatus.ON_SALE:
         params["open"] = "1"

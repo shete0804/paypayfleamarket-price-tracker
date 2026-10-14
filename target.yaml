@@ -11,7 +11,7 @@ item_list:
       store:
           - name: PayPayフリマ
             search_keyword: ミュウ RGB 緑
-            exclude_keyword: スリーブ
+            exclude_keyword: スリーブ,PSA,未開封,BOX,英語版,海外版,韓国語版,中国語版
     - name: 赤ミュウ RGB
       category: ポケモンカード
       store:
