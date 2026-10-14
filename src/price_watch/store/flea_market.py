@@ -288,8 +288,15 @@ def check(
     if "レア度必須" in exclude_terms:
         exclude_terms.remove("レア度必須")
         rarity_pattern = re.compile(r"(?<![A-Za-z])(SA|SAR|SR|UR|MUR|RR|RRR|AR|HR|CSR|SSR|BWR|CHR|S|A)(?![A-Za-z])")
+        # 「番号:○○/○○」の番号が名前にあれば、レア度がなくても合格にする（番号かレア度のどちらかがあればよい）
+        numbers_for_rarity = [t[len("番号:") :] for t in exclude_terms if t.startswith("番号:")]
         before_rarity = len(filtered_results)
-        filtered_results = [r for r in filtered_results if rarity_pattern.search(r.name)]
+        filtered_results = [
+            r
+            for r in filtered_results
+            if rarity_pattern.search(r.name)
+            or any(re.search(rf"(?<!\d){re.escape(n)}(?!\d)", r.name) for n in numbers_for_rarity)
+        ]
         if len(filtered_results) < before_rarity:
             logging.info("[%s] %s: レア度の記載がない商品を除外 (%d件 -> %d件)", label, item.name, before_rarity, len(filtered_results))
     # 「番号119」は、カード番号「119/...」の商品も合格にする指定（SA の文字がなくても、同じカードを取れるように）
