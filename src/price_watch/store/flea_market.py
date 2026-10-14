@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from price_watch.target import ResolvedItem
 
 # 検索結果の最大取得件数
-MAX_SEARCH_RESULTS = 100
+MAX_SEARCH_RESULTS = 40
 
 # ストアごとの検索関数とログ表示名
 _STORE_SEARCH_FUNCS: dict[
@@ -305,6 +305,24 @@ def check(
         ]
         if len(filtered_results) < before_sa:
             logging.info("[%s] %s: SAの記載がない商品を除外 (%d件 -> %d件)", label, item.name, before_sa, len(filtered_results))
+    # 「番号:095/069」の指定：その番号が名前にある出品は合格、別の番号（○○/○○）が書いてある出品は外す。
+    # 番号が書いていない出品は外さない（番号がなくても取れるように）
+    target_numbers = [t[len("番号:") :] for t in exclude_terms if t.startswith("番号:")]
+    exclude_terms = [t for t in exclude_terms if not t.startswith("番号:")]
+    if target_numbers:
+
+        def _number_ok(name: str) -> bool:
+            if any(re.search(rf"(?<!\d){re.escape(n)}(?!\d)", name) for n in target_numbers):
+                return True
+            return re.search(r"\d{1,3}/\d{2,3}", name) is None
+
+        before_number = len(filtered_results)
+        filtered_results = [r for r in filtered_results if _number_ok(r.name)]
+        if len(filtered_results) < before_number:
+            logging.info(
+                "[%s] %s: 別の番号の商品を除外 (%d件 -> %d件)", label, item.name, before_number, len(filtered_results)
+            )
+
     if exclude_terms:
         before_exclude = len(filtered_results)
         filtered_results = [
