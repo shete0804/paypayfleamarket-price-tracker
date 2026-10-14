@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from price_watch.target import ResolvedItem
 
 # 検索結果の最大取得件数
-MAX_SEARCH_RESULTS = 40
+MAX_SEARCH_RESULTS = 100
 
 # ストアごとの検索関数とログ表示名
 _STORE_SEARCH_FUNCS: dict[
