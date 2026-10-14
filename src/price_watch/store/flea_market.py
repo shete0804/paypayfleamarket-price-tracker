@@ -290,10 +290,15 @@ def check(
     # 「説明:SAR」の指定：名前にレア度がない出品は、商品ページの説明文に SAR と書いてあるかを確かめて、あれば合格にする
     description_terms = [t[len("説明:") :] for t in exclude_terms if t.startswith("説明:")]
     exclude_terms = [t for t in exclude_terms if not t.startswith("説明:")]
+    # 「下限:40000」：説明文の確認の対象（名前にレア度がない候補）の、値段の下限
+    description_floors = [int(t[len("下限:") :]) for t in exclude_terms if t.startswith("下限:")]
+    exclude_terms = [t for t in exclude_terms if not t.startswith("下限:")]
     if description_terms:
         name_rarity = re.compile(r"(?<![A-Za-z])(SA|SAR|SR|UR|MUR|RR|RRR|AR|HR|CSR|SSR|BWR|CHR|S|A)(?![A-Za-z])")
+        description_floor = max(description_floors, default=0)
         candidates = sorted(
-            [r for r in filtered_results if not name_rarity.search(r.name)], key=lambda r: r.price
+            [r for r in filtered_results if not name_rarity.search(r.name) and r.price >= description_floor],
+            key=lambda r: r.price,
         )[:10]
         passed_urls: set[str] = set()
         for cand in candidates:
