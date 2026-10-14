@@ -37,14 +37,14 @@ def split_exclude_keywords(exclude_keyword: str | None) -> list[str]:
 
 
 def build_search_url(condition: my_lib.store.flea_market.SearchCondition) -> str:
-    """検索条件から安い順の検索URLを生成する."""
+    """検索条件から検索URLを生成する（並びは既定のおすすめ順。値段の安さは取得後に判定する）."""
     keyword = condition.keyword
     for exclude_kw in split_exclude_keywords(condition.exclude_keyword):
         keyword = f"{keyword} -{exclude_kw}"
 
     url = f"{_SEARCH_BASE_URL}/{urllib.parse.quote(keyword)}"
 
-    params: dict[str, str] = {"sort": "price", "order": "asc"}
+    params: dict[str, str] = {}
 
     if condition.sale_status == my_lib.store.flea_market.SaleStatus.ON_SALE:
         params["open"] = "1"
