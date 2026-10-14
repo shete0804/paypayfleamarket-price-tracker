@@ -39,7 +39,11 @@ def split_exclude_keywords(exclude_keyword: str | None) -> list[str]:
 def build_search_url(condition: my_lib.store.flea_market.SearchCondition) -> str:
     """検索条件から安い順の検索URLを生成する."""
     keyword = condition.keyword
-    # 除外語は検索URLに入れない（PayPayは説明文の言葉でも外すため、正しい出品まで消える）。除外は取得後に商品名だけで判定する
+    for exclude_kw in split_exclude_keywords(condition.exclude_keyword):
+        # 「名:」で始まる除外語は、商品名だけで判定する（検索のURLには入れない。説明文の言葉で消えるのを防ぐ）
+        if exclude_kw.startswith(("名:", "番号:")):
+            continue
+        keyword = f"{keyword} -{exclude_kw}"
 
     url = f"{_SEARCH_BASE_URL}/{urllib.parse.quote(keyword)}"
 
