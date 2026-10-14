@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import logging
 import re
@@ -214,14 +215,24 @@ def check(
     search_func = entry[0]
 
     # 検索実行
+    # 検索語を「|」で区切ると、それぞれの検索語で検索して結果をまとめる（例：「ミュウVMAX SA|ミュウVMAX 119/100」）
     # 20件以上取得する場合は scroll_to_load=True
     scroll_to_load = MAX_SEARCH_RESULTS > 20
-    results = search_func(
-        page,
-        condition,
-        max_items=MAX_SEARCH_RESULTS,
-        scroll_to_load=scroll_to_load,
-    )
+    keywords = [kw.strip() for kw in condition.keyword.split("|") if kw.strip()]
+    results = []
+    seen_urls: set[str] = set()
+    for kw in keywords:
+        kw_results = search_func(
+            page,
+            dataclasses.replace(condition, keyword=kw),
+            max_items=MAX_SEARCH_RESULTS,
+            scroll_to_load=scroll_to_load,
+        )
+        logging.info("[%s] %s: 検索語「%s」で %d 件取得", label, item.name, kw, len(kw_results))
+        for r in kw_results:
+            if r.url not in seen_urls:
+                seen_urls.add(r.url)
+                results.append(r)
 
     # item_key 生成用のデータを設定
     result.search_keyword = condition.keyword
@@ -262,7 +273,7 @@ def check(
     filtered_results = [
         r
         for r in filtered_results
-        if price_watch.store.search_filter.matches_all_keywords(r.name, condition.keyword)
+        if any(price_watch.store.search_filter.matches_all_keywords(r.name, kw) for kw in keywords)
     ]
     if len(filtered_results) < before_keyword_filter:
         logging.info(
