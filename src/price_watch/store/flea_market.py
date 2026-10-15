@@ -306,7 +306,7 @@ def check(
     exclude_terms = [t for t in exclude_terms if not t.startswith("必須:")]
     if required_terms:
         before_required = len(filtered_results)
-        filtered_results = [r for r in filtered_results if all(req in r.name for req in required_terms)]
+        filtered_results = [r for r in filtered_results if all(price_watch.store.search_filter.normalize_name(req) in price_watch.store.search_filter.normalize_name(r.name) for req in required_terms)]
         if len(filtered_results) < before_required:
             logging.info(
                 "[%s] %s: 必須の言葉（%s）がない商品を除外 (%d件 -> %d件)",
@@ -396,7 +396,7 @@ def check(
     if exclude_terms:
         before_exclude = len(filtered_results)
         filtered_results = [
-            r for r in filtered_results if not any(term.removeprefix("名:") in r.name for term in exclude_terms)
+            r for r in filtered_results if not any(price_watch.store.search_filter.normalize_name(term.removeprefix("名:")) in price_watch.store.search_filter.normalize_name(r.name) for term in exclude_terms)
         ]
         if len(filtered_results) < before_exclude:
             logging.info(
