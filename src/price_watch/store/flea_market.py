@@ -228,7 +228,9 @@ def check(
     name_only_floors = [int(t[len("下限B:") :]) for t in condition.exclude_keyword.split(",") if t.startswith("下限B:")] if condition.exclude_keyword else []
     for index, kw in enumerate(keywords):
         if index == 0:
-            kw_condition = dataclasses.replace(condition, keyword=kw)
+            kw_condition = dataclasses.replace(
+                condition, keyword=kw, price_min=max(name_only_floors, default=condition.price_min)
+            )
             kw_max = MAX_SEARCH_RESULTS
         else:
             kw_condition = dataclasses.replace(
