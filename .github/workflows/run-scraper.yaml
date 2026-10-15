@@ -107,6 +107,13 @@ jobs:
             --exclude "セット,パック,デッキパーツ" \
             --limit 3 || echo "Failed to extract top 3 items"
 
+      - name: Notify Discord
+        if: always()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          uv run python notify_discord.py || echo "Discord 通知に失敗しました"
+
       - name: Upload Output
         uses: actions/upload-artifact@v4
         if: always()
