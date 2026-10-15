@@ -301,6 +301,22 @@ def check(
     exclude_terms = price_watch.store.paypay_search.split_exclude_keywords(condition.exclude_keyword)
 
     # 「説明:SAR」の指定：名前にレア度がない出品は、商品ページの説明文に SAR と書いてあるかを確かめて、あれば合格にする
+    # 「必須:○○」：商品名に ○○ が含まれるものだけを残す（スクレイプでは通して、ここで落とす二次フィルター）
+    required_terms = [t[len("必須:") :] for t in exclude_terms if t.startswith("必須:")]
+    exclude_terms = [t for t in exclude_terms if not t.startswith("必須:")]
+    if required_terms:
+        before_required = len(filtered_results)
+        filtered_results = [r for r in filtered_results if all(req in r.name for req in required_terms)]
+        if len(filtered_results) < before_required:
+            logging.info(
+                "[%s] %s: 必須の言葉（%s）がない商品を除外 (%d件 -> %d件)",
+                label,
+                item.name,
+                ", ".join(required_terms),
+                before_required,
+                len(filtered_results),
+            )
+
     description_terms = [t[len("説明:") :] for t in exclude_terms if t.startswith("説明:")]
     exclude_terms = [t for t in exclude_terms if not t.startswith("説明:")]
     # 「下限:40000」：説明文の確認の対象（名前にレア度がない候補）の、値段の下限
