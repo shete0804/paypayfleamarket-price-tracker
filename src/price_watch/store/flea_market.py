@@ -30,7 +30,9 @@ if TYPE_CHECKING:
     from price_watch.target import ResolvedItem
 
 # 検索結果の最大取得件数
-MAX_SEARCH_RESULTS = 100
+MAX_SEARCH_RESULTS = 40
+# 2つ目以降の検索語（名前だけ）で読む件数
+NAME_ONLY_SEARCH_RESULTS = 10
 
 # ストアごとの検索関数とログ表示名
 _STORE_SEARCH_FUNCS: dict[
@@ -221,11 +223,22 @@ def check(
     keywords = [kw.strip() for kw in condition.keyword.split("|") if kw.strip()]
     results = []
     seen_urls: set[str] = set()
-    for kw in keywords:
+    # 1つ目の検索語（名前＋レア度）は MAX_SEARCH_RESULTS 件。2つ目以降（名前だけ）は NAME_ONLY_SEARCH_RESULTS 件で、
+    # 「下限B:○○」があれば、その値段以上だけを検索する（検索の時点で偽物の安い商品を外す）
+    name_only_floors = [int(t[len("下限B:") :]) for t in condition.exclude_keyword.split(",") if t.startswith("下限B:")] if condition.exclude_keyword else []
+    for index, kw in enumerate(keywords):
+        if index == 0:
+            kw_condition = dataclasses.replace(condition, keyword=kw)
+            kw_max = MAX_SEARCH_RESULTS
+        else:
+            kw_condition = dataclasses.replace(
+                condition, keyword=kw, price_min=max(name_only_floors, default=condition.price_min)
+            )
+            kw_max = NAME_ONLY_SEARCH_RESULTS
         kw_results = search_func(
             page,
-            dataclasses.replace(condition, keyword=kw),
-            max_items=MAX_SEARCH_RESULTS,
+            kw_condition,
+            max_items=kw_max,
             scroll_to_load=scroll_to_load,
         )
         logging.info("[%s] %s: 検索語「%s」で %d 件取得", label, item.name, kw, len(kw_results))
