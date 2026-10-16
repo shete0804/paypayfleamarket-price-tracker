@@ -60,6 +60,12 @@ def build_search_url(condition: my_lib.store.flea_market.SearchCondition) -> str
     if condition.price_max is not None:
         params["maxPrice"] = str(condition.price_max)
 
+    # 商品の状態（例：conditions=NEW,USED10,USED20,USED40）。指定がなければ全部の状態を対象にする
+    if condition.condition:
+        codes = list(dict.fromkeys(_CONDITION_PARAM_MAP[c] for c in condition.condition if c in _CONDITION_PARAM_MAP))
+        if codes:
+            params["conditions"] = ",".join(codes)
+
     query = "&".join(f"{urllib.parse.quote(k)}={urllib.parse.quote(v)}" for k, v in params.items())
     return f"{url}?{query}"
 
