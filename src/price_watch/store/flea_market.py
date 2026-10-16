@@ -226,6 +226,8 @@ def check(
     # 1つ目の検索語（名前＋レア度）は MAX_SEARCH_RESULTS 件。2つ目以降（名前だけ）は NAME_ONLY_SEARCH_RESULTS 件で、
     # 「下限B:○○」があれば、その値段以上だけを検索する（検索の時点で偽物の安い商品を外す）
     name_only_floors = [int(t[len("下限B:") :]) for t in condition.exclude_keyword.split(",") if t.startswith("下限B:")] if condition.exclude_keyword else []
+    # 「下限C:」は2つ目の検索語だけに付ける（ミュウは1つ目は下限なし、2つ目は色ごとの下限）
+    extra_floors = [int(t[len("下限C:") :]) for t in condition.exclude_keyword.split(",") if t.startswith("下限C:")] if condition.exclude_keyword else []
     for index, kw in enumerate(keywords):
         if index == 0:
             kw_condition = dataclasses.replace(
@@ -234,7 +236,7 @@ def check(
             kw_max = MAX_SEARCH_RESULTS
         else:
             kw_condition = dataclasses.replace(
-                condition, keyword=kw, price_min=max(name_only_floors, default=condition.price_min)
+                condition, keyword=kw, price_min=max(name_only_floors + extra_floors, default=condition.price_min)
             )
             kw_max = NAME_ONLY_SEARCH_RESULTS
         kw_results = search_func(

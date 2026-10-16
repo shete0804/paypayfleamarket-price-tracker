@@ -41,7 +41,7 @@ def build_search_url(condition: my_lib.store.flea_market.SearchCondition) -> str
     keyword = condition.keyword
     for exclude_kw in split_exclude_keywords(condition.exclude_keyword):
         # 「名:」で始まる除外語は、商品名だけで判定する（検索のURLには入れない。説明文の言葉で消えるのを防ぐ）
-        if exclude_kw.startswith(("名:", "番号:", "説明:", "下限:", "下限B:", "必須:")):
+        if exclude_kw.startswith(("名:", "番号:", "説明:", "下限:", "下限B:", "下限C:", "必須:")):
             continue
         keyword = f"{keyword} -{exclude_kw}"
 
