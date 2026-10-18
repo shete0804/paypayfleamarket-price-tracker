@@ -42,6 +42,7 @@ ol { list-style: none; margin: 0; padding: 0; }
 li { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; border-top: 1px dashed var(--rule); font-variant-numeric: tabular-nums; }
 li:first-child { border-top: none; }
 .rank { color: var(--muted); min-width: 2.6em; font-size: 12px; }
+.thumb { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; flex: none; background: var(--rule); }
 .price { font-weight: 700; }
 .price a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; }
 .best .price { color: var(--best); }
@@ -103,6 +104,16 @@ function siteBlock(name, cls, rows, cheapest) {
     const price = Number(r["価格"]);
     const li = el("li");
     if (price === cheapest) li.className = "best";
+    if (r["写真"]) {
+      const img = el("img");
+      img.src = r["写真"];
+      img.alt = "";
+      img.loading = "lazy";
+      img.width = 56;
+      img.height = 56;
+      img.className = "thumb";
+      li.appendChild(img);
+    }
     li.appendChild(el("span", "rank", r["順位"] + "位"));
     const span = el("span", "price");
     const a = el("a", null, "¥" + price.toLocaleString("ja-JP"));
