@@ -63,10 +63,37 @@ footer { margin-top: 20px; color: var(--muted); font-size: 12px; }
       <span>「最安」は、そのカードで一番安い出品です。</span>
     </p>
   </header>
-  <div id="cards"><p class="empty">結果を読み込んでいます…</p></div>
-  <footer id="updated"></footer>
+  <form id="gate" class="card">
+    <label for="pw">パスワード</label>
+    <p><input id="pw" type="password" autocomplete="current-password" required>
+    <button type="submit">開く</button></p>
+    <p id="gate-msg" class="empty" hidden>パスワードが違います。</p>
+  </form>
+  <div id="cards" hidden><p class="empty">結果を読み込んでいます…</p></div>
+  <footer id="updated" hidden></footer>
 </main>
 <script>
+// 簡易的な入口のパスワード（ハッシュだけを置く）。CSV は公開のままなので本当の保護ではない
+const PW_HASH = "224948ca810fc2bc9e3d80c0b1129fe2487fa4e307961001ab8443db82f7bb69";
+
+async function sha256hex(text) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+document.getElementById("gate").addEventListener("submit", async e => {
+  e.preventDefault();
+  const input = document.getElementById("pw").value;
+  if (await sha256hex(input) === PW_HASH) {
+    document.getElementById("gate").hidden = true;
+    document.getElementById("cards").hidden = false;
+    document.getElementById("updated").hidden = false;
+    load().catch(showError);
+  } else {
+    document.getElementById("gate-msg").hidden = false;
+  }
+});
+
 // 両方の定期実行が commit する CSV を、開いたときに読みにいく
 const SOURCES = {
   paypay: "https://raw.githubusercontent.com/shete0804/paypayfleamarket-price-tracker/main/results/paypay.csv",
@@ -128,7 +155,7 @@ function siteBlock(name, cls, rows, cheapest) {
   return box;
 }
 
-async function main() {
+async function load() {
   const [ppText, mcText] = await Promise.all(
     Object.values(SOURCES).map(url => fetch(url, { cache: "no-store" }).then(r => {
       if (!r.ok) throw new Error(r.status + " " + url);
@@ -168,10 +195,10 @@ async function main() {
   document.getElementById("updated").textContent = "結果の更新：" + updated + "。開いた時点で最新の CSV を読んでいます。";
 }
 
-main().catch(err => {
+function showError(err) {
   const root = document.getElementById("cards");
   root.replaceChildren(el("p", "empty", "結果を読み込めませんでした：" + err.message));
-});
+}
 </script>
 </body>
 </html>
