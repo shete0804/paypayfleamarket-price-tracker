@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - "results/**"
   schedule:
     - cron: "0 */6 * * *"
 
@@ -14,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      contents: write
 
     env:
       TZ: "Asia/Tokyo"
@@ -113,6 +115,26 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           uv run python notify_discord.py || echo "Discord 通知に失敗しました"
+
+      - name: Export results CSV
+        if: always()
+        run: |
+          uv run python export_csv.py || echo "CSV の書き出しに失敗しました"
+
+      - name: Commit results CSV
+        if: always()
+        run: |
+          [ -f results/paypay.csv ] || exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/paypay.csv
+          if git diff --cached --quiet; then
+            echo "CSV に変更なし"
+          else
+            git commit -m "chore: update PayPay results CSV [skip ci]"
+            git pull --rebase -q
+            git push
+          fi
 
       - name: Upload Output
         uses: actions/upload-artifact@v4
