@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS top3_history(
     price        INTEGER NOT NULL,
     name         TEXT NOT NULL,
     url          TEXT,
+    thumb_url    TEXT,
     time         TIMESTAMP DEFAULT(DATETIME('now','localtime')),
     FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );

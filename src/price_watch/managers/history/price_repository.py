@@ -269,11 +269,11 @@ class PriceRepository:
         with self.db.connect() as conn:
             conn.executemany(
                 """
-                INSERT INTO top3_history (item_id, rank, price, name, url, time)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO top3_history (item_id, rank, price, name, url, thumb_url, time)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
                 [
-                    (item_id, rank, top.price, top.name, top.url, now_str)
+                    (item_id, rank, top.price, top.name, top.url, getattr(top, "thumb_url", None), now_str)
                     for rank, top in enumerate(top3_items, 1)
                 ],
             )
