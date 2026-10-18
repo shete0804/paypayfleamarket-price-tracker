@@ -13,8 +13,10 @@ import pathlib
 import sqlite3
 import sys
 import urllib.request
+from datetime import datetime, timedelta, timezone
 
 DB_PATH = pathlib.Path("./data/price/price.db")
+JST = timezone(timedelta(hours=9))
 WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
 
 
@@ -43,23 +45,22 @@ def load_items_and_latest() -> list[tuple[str, list[tuple[int, int, str, str]]]]
 def build_payload(cards: list[tuple[str, list[tuple[int, int, str, str]]]]) -> dict:
     """Discord の Embed を作る（カードごとに 1 フィールド、管理番号つき）。"""
     fields = []
-    for number, (card, items) in enumerate(cards, 1):
+    for card, items in cards:
         if items:
-            lines = []
-            for rank, price, name, url in items:
-                short_name = name if len(name) <= 40 else name[:40] + "…"
-                lines.append(f"{rank}. ¥{price:,} {short_name}\n{url}")
-            value = "\n".join(lines)
+            # メルカリ版と同じ形：「No.1 [¥価格](リンク)」を1行ずつ
+            value = "\n".join(f"No.{rank} [¥{price:,}]({url})" for rank, price, _name, url in items)
         else:
             value = "該当なし"
-        fields.append({"name": f"No.{number} {card}"[:250], "value": value[:1024], "inline": False})
+        fields.append({"name": card[:250], "value": value[:1024], "inline": False})
 
     return {
         "embeds": [
             {
-                "title": "PayPayフリマ 最安 TOP3",
-                "description": "カードごとに、出品中で安い順の上位3件です。",
+                "title": "PayPayフリマ カード 最安値レポート",
+                "description": f"出品中・最安 3 件 / {datetime.now(JST).strftime('%Y-%m-%d %H:%M JST')}",
+                "color": 0xFF0033,
                 "fields": fields[:25],
+                "footer": {"text": "6 時間ごと自動実行"},
             }
         ]
     }
