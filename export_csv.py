@@ -16,6 +16,15 @@ DB_PATH = pathlib.Path("./data/price/price.db")
 OUT_PATH = pathlib.Path("./results/paypay.csv")
 JST = timezone(timedelta(hours=9))
 
+# メルカリ版と同じ名前で並べられるように、共通の短い名前に直す（同じカードを同じ行に並べるため）
+LABELS = {
+    "メガリザードンYex スタートデッキ100": "メガリザードンYex MUR",
+    "メガリザードンXex SAR インフェルノX": "メガリザードンXex SAR",
+    "ギラティナV SA ロストアビス": "ギラティナV SA",
+    "メガレックウザex MUR ストームエメラルダ": "メガレックウザex MUR",
+    "ピカチュウex スタートデッキ100": "ピカチュウex",
+}
+
 
 def main() -> int:
     if not DB_PATH.exists():
@@ -46,12 +55,13 @@ def main() -> int:
         writer = csv.writer(f)
         writer.writerow(["カード", "順位", "価格", "URL", "更新"])
         for item_id, name in items:
+            label = LABELS.get(name, name)
             found = latest.get(item_id, [])
             if not found:
-                writer.writerow([name, "", "該当なし", "", now])
+                writer.writerow([label, "", "該当なし", "", now])
                 continue
             for rank, price, url in found:
-                writer.writerow([name, rank, price, url, now])
+                writer.writerow([label, rank, price, url, now])
 
     print(f"書き出しました: {OUT_PATH}（{len(items)} カード）")
     return 0
