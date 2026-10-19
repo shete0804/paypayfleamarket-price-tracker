@@ -48,6 +48,7 @@ li:first-child { border-top: none; }
 .best .price { color: var(--best); }
 .best .price::after { content: " 最安"; font-size: 11px; font-weight: 700; margin-left: 4px; }
 .empty { color: var(--muted); font-size: 13px; margin: 0; }
+.photo-btn { margin-left: auto; font-size: 12px; padding: 2px 10px; border: 1px solid var(--mercari); color: var(--mercari); border-radius: 999px; text-decoration: none; white-space: nowrap; }
 footer { margin-top: 20px; color: var(--muted); font-size: 12px; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 </style>
@@ -149,6 +150,15 @@ function siteBlock(name, cls, rows, cheapest) {
     a.rel = "noopener noreferrer";
     span.appendChild(a);
     li.appendChild(span);
+    if (cls === "mercari") {
+      // 写真を作る：商品番号を入れた Issue の画面を開く（送信ボタンを押すと処理が始まる）
+      const id = r["URL"].split("/").pop();
+      const btn = el("a", "photo-btn", "写真を作る");
+      btn.href = "https://github.com/shete0804/mercari-photo-test/issues/new?title=" + encodeURIComponent(id);
+      btn.target = "_blank";
+      btn.rel = "noopener noreferrer";
+      li.appendChild(btn);
+    }
     list.appendChild(li);
   }
   box.appendChild(list);
