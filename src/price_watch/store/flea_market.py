@@ -442,8 +442,8 @@ def check(
     if detail_url and ' ' in detail_url:
         detail_url = detail_url.split(' ')[0]
 
-    # TOP3を取得
-    top3_results = sorted(filtered_results, key=lambda r: r.price)[:3]
+    # 最安の上位5件を取得
+    top3_results = sorted(filtered_results, key=lambda r: r.price)[:5]
 
     # TOP3 全件を格納
     result.top3_items = top3_results
