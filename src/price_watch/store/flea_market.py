@@ -176,6 +176,16 @@ def _build_search_cond_json(condition: my_lib.store.flea_market.SearchCondition)
     return json.dumps(data, sort_keys=True, ensure_ascii=False) if data else ""
 
 
+def _required_ok(name: str, req: str) -> bool:
+    """必須の言葉が名前にあるか。「R/RGB」などの色の指定は、色の文字（単独）と RGB の両方があれば合格（順番は問わない）。"""
+    m = re.fullmatch(r"([A-Za-z])/RGB", req)
+    if m:
+        letter = m.group(1)
+        has_letter = re.search(rf"(?<![A-Za-z]){letter}(?![A-Za-z])", name, re.IGNORECASE) is not None
+        return has_letter and re.search(r"RGB", name, re.IGNORECASE) is not None
+    return price_watch.store.search_filter.normalize_name(req) in price_watch.store.search_filter.normalize_name(name)
+
+
 def _is_recent_listing(text: str, days: int = 30) -> bool:
     """商品ページの文から、最終更新が直近 days 日以内かを判定する（「◯日前に更新」「出品日時」）。"""
     import datetime as _dt
@@ -347,7 +357,7 @@ def check(
     exclude_terms = [t for t in exclude_terms if not t.startswith("必須:")]
     if required_terms:
         before_required = len(filtered_results)
-        filtered_results = [r for r in filtered_results if all(price_watch.store.search_filter.normalize_name(req) in price_watch.store.search_filter.normalize_name(r.name) for req in required_terms)]
+        filtered_results = [r for r in filtered_results if all(_required_ok(r.name, req) for req in required_terms)]
         if len(filtered_results) < before_required:
             logging.info(
                 "[%s] %s: 必須の言葉（%s）がない商品を除外 (%d件 -> %d件)",
