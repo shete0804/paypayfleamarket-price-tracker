@@ -8,7 +8,7 @@ on:
     paths-ignore:
       - "results/**"
   schedule:
-    - cron: "0 * * * *"
+    - cron: "*/30 * * * *"
 
 jobs:
   scrape:
