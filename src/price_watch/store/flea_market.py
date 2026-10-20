@@ -509,6 +509,7 @@ def check(
     result.top3_items = top3_results
 
     # TOP3 全件をログ出力（デバッグ用）
+    logging.info("[進捗] %s: 上位 %d 件を確定（%s）", item.name, len(top3_results), label)
     logging.info("[%s] %s: TOP3全件のデバッグ情報:", label, item.name)
     for rank, top_item in enumerate(top3_results, 1):
         all_attrs = vars(top_item)
