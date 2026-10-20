@@ -260,10 +260,13 @@ def check(
     name_only_floors = [int(t[len("下限B:") :]) for t in condition.exclude_keyword.split(",") if t.startswith("下限B:")] if condition.exclude_keyword else []
     # 「下限C:」は2つ目の検索語だけに付ける（ミュウは1つ目は下限なし、2つ目は色ごとの下限）
     extra_floors = [int(t[len("下限C:") :]) for t in condition.exclude_keyword.split(",") if t.startswith("下限C:")] if condition.exclude_keyword else []
+    # 「下限A:○○」は1つ目の検索語（名前＋レア度）の下限（買取の5割など）。なければ下限Bを使う
+    first_floors = [int(t[len("下限A:") :]) for t in condition.exclude_keyword.split(",") if t.startswith("下限A:")] if condition.exclude_keyword else []
+    first_price_min = max(first_floors) if first_floors else max(name_only_floors, default=condition.price_min)
     for index, kw in enumerate(keywords):
         if index == 0:
             kw_condition = dataclasses.replace(
-                condition, keyword=kw, price_min=max(name_only_floors, default=condition.price_min)
+                condition, keyword=kw, price_min=first_price_min
             )
             kw_max = MAX_SEARCH_RESULTS
         else:
@@ -290,7 +293,7 @@ def check(
             condition,
             keyword=keywords[0],
             exclude_keyword=",".join(filter(None, [condition.exclude_keyword, "新着:1"])),
-            price_min=max(name_only_floors, default=condition.price_min),
+            price_min=first_price_min,
         )
         new_results = search_func(page, new_condition, max_items=NEW_ARRIVAL_RESULTS, scroll_to_load=False)
         logging.info("[%s] %s: 新着順の検索で %d 件取得", label, item.name, len(new_results))
