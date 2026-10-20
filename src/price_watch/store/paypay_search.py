@@ -41,13 +41,16 @@ def build_search_url(condition: my_lib.store.flea_market.SearchCondition) -> str
     keyword = condition.keyword
     for exclude_kw in split_exclude_keywords(condition.exclude_keyword):
         # 「名:」で始まる除外語は、商品名だけで判定する（検索のURLには入れない。説明文の言葉で消えるのを防ぐ）
-        if exclude_kw.startswith(("名:", "番号:", "説明:", "下限:", "下限B:", "下限C:", "必須:")):
+        if exclude_kw.startswith(("名:", "番号:", "説明:", "下限:", "下限B:", "下限C:", "必須:", "新着:")):
             continue
         keyword = f"{keyword} -{exclude_kw}"
 
     url = f"{_SEARCH_BASE_URL}/{urllib.parse.quote(keyword)}"
 
     params: dict[str, str] = {"sort": "price", "order": "asc", "withSpeller": "0"}
+    # 「新着:1」の検索は、新着順（出品が新しい順）で読む
+    if "新着:1" in split_exclude_keywords(condition.exclude_keyword):
+        params = {"sort": "openTime", "order": "desc", "withSpeller": "0"}
 
     if condition.sale_status == my_lib.store.flea_market.SaleStatus.ON_SALE:
         params["open"] = "1"

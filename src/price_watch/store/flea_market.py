@@ -33,6 +33,8 @@ if TYPE_CHECKING:
 MAX_SEARCH_RESULTS = 40
 # 2つ目以降の検索語（名前だけ）で読む件数
 NAME_ONLY_SEARCH_RESULTS = 10
+# 新着順の検索の件数（新しく出た出品を取りこぼさないため）
+NEW_ARRIVAL_RESULTS = 10
 
 # ストアごとの検索関数とログ表示名
 _STORE_SEARCH_FUNCS: dict[
@@ -269,6 +271,21 @@ def check(
         for r in kw_results:
             # 検索語ごとに、その検索語の言葉が名前にあるものだけを採用する（別の検索語の混入を防ぐ）
             if price_watch.store.search_filter.matches_all_keywords(r.name, kw) and r.url not in seen_urls:
+                seen_urls.add(r.url)
+                results.append(r)
+
+    # 新着順の検索（新しく出た出品を取りこぼさないため、NEW_ARRIVAL_RESULTS 件）
+    if keywords:
+        new_condition = dataclasses.replace(
+            condition,
+            keyword=keywords[0],
+            exclude_keyword=",".join(filter(None, [condition.exclude_keyword, "新着:1"])),
+            price_min=max(name_only_floors, default=condition.price_min),
+        )
+        new_results = search_func(page, new_condition, max_items=NEW_ARRIVAL_RESULTS, scroll_to_load=False)
+        logging.info("[%s] %s: 新着順の検索で %d 件取得", label, item.name, len(new_results))
+        for r in new_results:
+            if price_watch.store.search_filter.matches_all_keywords(r.name, keywords[0]) and r.url not in seen_urls:
                 seen_urls.add(r.url)
                 results.append(r)
 
