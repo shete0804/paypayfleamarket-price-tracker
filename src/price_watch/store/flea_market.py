@@ -174,6 +174,26 @@ def _build_search_cond_json(condition: my_lib.store.flea_market.SearchCondition)
     return json.dumps(data, sort_keys=True, ensure_ascii=False) if data else ""
 
 
+def _is_recent_listing(text: str, days: int = 30) -> bool:
+    """商品ページの文から、最終更新が直近 days 日以内かを判定する（「◯日前に更新」「出品日時」）。"""
+    import datetime as _dt
+    import re as _re
+
+    if _re.search(r"\d+\s*(時間|分)前に更新", text):
+        return True
+    m = _re.search(r"(\d+)\s*日前に更新", text)
+    if m:
+        return int(m.group(1)) <= days
+    if _re.search(r"\d+\s*(か月|ヶ月)前に更新", text):
+        return False
+    m = _re.search(r"出品日時[：:]\s*(\d{4})年(\d{1,2})月(\d{1,2})日", text)
+    if m:
+        jst = _dt.timezone(_dt.timedelta(hours=9))
+        listed = _dt.datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)), tzinfo=jst)
+        return listed >= _dt.datetime.now(jst) - _dt.timedelta(days=days)
+    return False
+
+
 def _get_store_label(item: ResolvedItem) -> str:
     """ストアのログ表示名を取得."""
     entry = _STORE_SEARCH_FUNCS.get(item.check_method)
@@ -441,6 +461,19 @@ def check(
     # URL をクリーニング（スペース以降を削除）
     if detail_url and ' ' in detail_url:
         detail_url = detail_url.split(' ')[0]
+
+    # 最終更新日が直近30日以内の出品だけを残す（安い順に商品ページを開いて確かめ、5件そろうまで。最大15件）
+    recent_results = []
+    for cand in sorted(filtered_results, key=lambda r: r.price)[:15]:
+        if len(recent_results) >= 5:
+            break
+        page.goto(cand.url)
+        if _is_recent_listing(page.evaluate("document.body.innerText") or ""):
+            recent_results.append(cand)
+    logging.info(
+        "[%s] %s: 直近30日以内の出品 %d 件（候補 %d 件から）", label, item.name, len(recent_results), len(filtered_results)
+    )
+    filtered_results = recent_results
 
     # 最安の上位5件を取得
     top3_results = sorted(filtered_results, key=lambda r: r.price)[:5]
