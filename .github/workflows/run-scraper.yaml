@@ -8,7 +8,12 @@ on:
     paths-ignore:
       - "results/**"
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "7,22,37,52 * * * *"
+
+# 1回が約11分かかるので、実行が重ならないように1つずつ順番に動かす（実行中のものは止めない）
+concurrency:
+  group: run-scraper
+  cancel-in-progress: false
 
 jobs:
   scrape:
