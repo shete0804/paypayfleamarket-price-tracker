@@ -31,8 +31,8 @@ if TYPE_CHECKING:
 
 # 検索結果の最大取得件数
 MAX_SEARCH_RESULTS = 40
-# 2つ目以降の検索語（名前だけ）で読む件数
-NAME_ONLY_SEARCH_RESULTS = 10
+# 2つ目以降の検索語で読む件数（SA と HR の別々の検索を、どちらも同じ件数で読むため 40 件）
+NAME_ONLY_SEARCH_RESULTS = 40
 # 新着順の検索の件数（新しく出た出品を取りこぼさないため）
 NEW_ARRIVAL_RESULTS = 10
 

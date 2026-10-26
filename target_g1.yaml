@@ -32,7 +32,7 @@ item_list:
       cond: NEW|LIKE_NEW|GOOD|FAIR
       store:
           - name: PayPayフリマ
-            search_keyword: ブラッキーVMAX SA|ブラッキーVMAX
+            search_keyword: ブラッキーVMAX SA|ブラッキーVMAX HR
             exclude_keyword: 名:スリーブ,名:スリープ,未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,名:PSA,英語版,韓国語版,中国語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,ロット,メモ帳,ステッカー,展示用,特典,ブレンダ,SA必須,番号:095/069,下限B:360000,下限A:225000
     - name: メガリザードンXex SAR インフェルノX
       category: ポケモンカード
@@ -46,7 +46,7 @@ item_list:
       cond: NEW|LIKE_NEW|GOOD|FAIR
       store:
           - name: PayPayフリマ
-            search_keyword: レックウザVMAX SA|レックウザVMAX
+            search_keyword: レックウザVMAX SA|レックウザVMAX HR
             exclude_keyword: 名:スリーブ,名:スリープ,未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,名:PSA,英語版,韓国語版,中国語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,ロット,メモ帳,ステッカー,展示用,特典,ブレンダ,SA必須,番号:083/067,下限B:300000,下限A:300000
     - name: メガリザードンYex スタートデッキ100
       category: ポケモンカード
@@ -102,7 +102,7 @@ item_list:
       cond: NEW|LIKE_NEW|GOOD|FAIR
       store:
           - name: PayPayフリマ
-            search_keyword: ニンフィアVMAX SA|ニンフィアVMAX
+            search_keyword: ニンフィアVMAX SA|ニンフィアVMAX HR
             exclude_keyword: 名:スリーブ,名:スリープ,未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,名:PSA,英語版,韓国語版,中国語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,ロット,メモ帳,ステッカー,展示用,特典,ブレンダ,SA必須,番号:093/069,下限B:76000,下限A:47500
     - name: レッドのピカチュウ
       category: ポケモンカード
