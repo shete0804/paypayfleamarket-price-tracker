@@ -423,18 +423,9 @@ def check(
     # 「番号119」は、カード番号「119/...」の商品も合格にする指定（SA の文字がなくても、同じカードを取れるように）
     card_numbers = [t[2:] for t in exclude_terms if t.startswith("番号") and not t.startswith("番号:")]
     exclude_terms = [t for t in exclude_terms if not t.startswith("番号") or t.startswith("番号:")]
+    # 「SA必須」は 2 段階目では見ない（検索語の「X SA」で、SA の表記は 1 段階目で確かめている）
     if "SA必須" in exclude_terms:
         exclude_terms.remove("SA必須")
-        # SA の表記、または「スペシャルアート」があれば合格にする（HR の検索で取れた出品は hr_urls で別に扱う）
-        sa_pattern = re.compile(r"(?<![A-Za-z])SA(?![A-Za-z])|スペシャルアート", re.IGNORECASE)
-        number_patterns = [re.compile(rf"(?<!\d){re.escape(n)}/\d+") for n in card_numbers]
-        before_sa = len(filtered_results)
-        filtered_results = [
-            r for r in filtered_results
-            if sa_pattern.search(r.name) or any(p.search(r.name) for p in number_patterns) or r.url in hr_urls
-        ]
-        if len(filtered_results) < before_sa:
-            logging.info("[%s] %s: SAの記載がない商品を除外 (%d件 -> %d件)", label, item.name, before_sa, len(filtered_results))
     # 「番号:095/069」の指定：その番号が名前にある出品は合格、別の番号（○○/○○）が書いてある出品は外す。
     # 番号が書いていない出品は外さない（番号がなくても取れるように）
     target_numbers = [t[len("番号:") :] for t in exclude_terms if t.startswith("番号:")]
