@@ -255,6 +255,8 @@ def check(
     keywords = [kw.strip() for kw in condition.keyword.split("|") if kw.strip()]
     results = []
     seen_urls: set[str] = set()
+    # 「X HR」の検索で取れた出品は、SA の表記がなくても残す（SA の判定から外す）
+    hr_urls: set[str] = set()
     # 1つ目の検索語（名前＋レア度）は MAX_SEARCH_RESULTS 件。2つ目以降（名前だけ）は NAME_ONLY_SEARCH_RESULTS 件で、
     # 「下限B:○○」があれば、その値段以上だけを検索する（検索の時点で偽物の安い商品を外す）
     name_only_floors = [int(t[len("下限B:") :]) for t in condition.exclude_keyword.split(",") if t.startswith("下限B:")] if condition.exclude_keyword else []
@@ -286,6 +288,8 @@ def check(
             if price_watch.store.search_filter.matches_all_keywords(r.name, kw) and r.url not in seen_urls:
                 seen_urls.add(r.url)
                 results.append(r)
+                if kw.upper().endswith(" HR"):
+                    hr_urls.add(r.url)
 
     # 新着順の検索（新しく出た出品を取りこぼさないため、NEW_ARRIVAL_RESULTS 件）
     if keywords:
@@ -426,7 +430,8 @@ def check(
         number_patterns = [re.compile(rf"(?<!\d){re.escape(n)}/\d+") for n in card_numbers]
         before_sa = len(filtered_results)
         filtered_results = [
-            r for r in filtered_results if sa_pattern.search(r.name) or any(p.search(r.name) for p in number_patterns)
+            r for r in filtered_results
+            if sa_pattern.search(r.name) or any(p.search(r.name) for p in number_patterns) or r.url in hr_urls
         ]
         if len(filtered_results) < before_sa:
             logging.info("[%s] %s: SAの記載がない商品を除外 (%d件 -> %d件)", label, item.name, before_sa, len(filtered_results))
