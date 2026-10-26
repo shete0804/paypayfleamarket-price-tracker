@@ -2,6 +2,11 @@
 
 on:
   workflow_dispatch:
+    inputs:
+      group:
+        description: "動かすグループ（1 か 2）"
+        required: false
+        default: "1"
   push:
     branches:
       - master
