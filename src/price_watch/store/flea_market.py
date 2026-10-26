@@ -425,8 +425,8 @@ def check(
     exclude_terms = [t for t in exclude_terms if not t.startswith("番号") or t.startswith("番号:")]
     if "SA必須" in exclude_terms:
         exclude_terms.remove("SA必須")
-        # SA（スペシャルアート）か HR（ハイレア）のどちらかの表記があれば合格にする
-        sa_pattern = re.compile(r"(?<![A-Za-z])(SA|HR)(?![A-Za-z])", re.IGNORECASE)
+        # SA の表記、または「スペシャルアート」があれば合格にする（HR の検索で取れた出品は hr_urls で別に扱う）
+        sa_pattern = re.compile(r"(?<![A-Za-z])SA(?![A-Za-z])|スペシャルアート", re.IGNORECASE)
         number_patterns = [re.compile(rf"(?<!\d){re.escape(n)}/\d+") for n in card_numbers]
         before_sa = len(filtered_results)
         filtered_results = [
