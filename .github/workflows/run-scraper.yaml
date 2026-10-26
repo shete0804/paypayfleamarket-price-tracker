@@ -94,7 +94,7 @@ jobs:
       - name: Choose target group
         id: group
         run: |
-          if [ "${{ github.event.schedule }}" = "20,50 * * * *" ]; then
+          if [ "${{ inputs.group }}" = "2" ] || [ "${{ github.event.schedule }}" = "20,50 * * * *" ]; then
             echo "target=target_g2.yaml" >> "$GITHUB_OUTPUT"
           else
             echo "target=target_g1.yaml" >> "$GITHUB_OUTPUT"
@@ -160,4 +160,5 @@ jobs:
           path: |
             scraper-output.log
             data/price/price.db
+
 
