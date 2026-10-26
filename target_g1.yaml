@@ -67,14 +67,14 @@ item_list:
       cond: NEW|LIKE_NEW|GOOD|FAIR
       store:
           - name: PayPayフリマ
-            search_keyword: ギラティナV SA|ギラティナV
+            search_keyword: ギラティナV SA|ギラティナV SR
             exclude_keyword: 名:スリーブ,名:スリープ,未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,名:PSA,英語版,韓国語版,中国語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,ロット,メモ帳,ステッカー,展示用,特典,ブレンダ,VSTAR,SA必須,番号:111/100,下限B:96000,下限A:60000
     - name: ルギアV SA
       category: ポケモンカード
       cond: NEW|LIKE_NEW|GOOD|FAIR
       store:
           - name: PayPayフリマ
-            search_keyword: ルギアV SA|ルギアV
+            search_keyword: ルギアV SA|ルギアV SR
             exclude_keyword: 名:スリーブ,名:スリープ,未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,名:PSA,英語版,韓国語版,中国語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,ロット,メモ帳,ステッカー,展示用,特典,ブレンダ,VSTAR,SA必須,番号:110/098,下限B:60000,下限A:37500
     - name: メガリザードンXex MUR
       category: ポケモンカード
@@ -88,7 +88,7 @@ item_list:
       cond: NEW|LIKE_NEW|GOOD|FAIR
       store:
           - name: PayPayフリマ
-            search_keyword: ミュウVMAX SA|ミュウVMAX
+            search_keyword: ミュウVMAX SA|ミュウVMAX HR
             exclude_keyword: 名:スリーブ,名:スリープ,未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,名:PSA,英語版,韓国語版,中国語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,ロット,メモ帳,ステッカー,展示用,特典,ブレンダ,SA必須,番号119,下限B:72000,下限A:45000
     - name: メガレックウザex MUR ストームエメラルダ
       category: ポケモンカード
@@ -130,14 +130,14 @@ item_list:
       cond: NEW|LIKE_NEW|GOOD|FAIR
       store:
           - name: PayPayフリマ
-            search_keyword: ピカチュウ&ゼクロムGX
+            search_keyword: ピカチュウ&ゼクロムGX SA|ピカチュウ&ゼクロムGX SR
             exclude_keyword: 名:スリーブ,名:スリープ,手描き,手書き,名:イラスト,未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,名:PSA,英語版,韓国語版,中国語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,ロット,メモ帳,ステッカー,展示用,特典,ブレンダ,番号:101/095,下限B:216000,下限A:216000
     - name: ブラッキー&ダークライGX
       category: ポケモンカード
       cond: NEW|LIKE_NEW|GOOD|FAIR
       store:
           - name: PayPayフリマ
-            search_keyword: ブラッキー&ダークライGX
+            search_keyword: ブラッキー&ダークライGX SA|ブラッキー&ダークライGX SR
             exclude_keyword: 名:スリーブ,名:スリープ,手描き,手書き,名:イラスト,未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,名:PSA,英語版,韓国語版,中国語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,ロット,メモ帳,ステッカー,展示用,特典,ブレンダ,番号:182/173,下限B:112000,下限A:112000
     - name: イーブイ
       category: ポケモンカード
@@ -179,5 +179,5 @@ item_list:
       cond: NEW|LIKE_NEW|GOOD|FAIR
       store:
           - name: PayPayフリマ
-            search_keyword: グレイシアVMAX
+            search_keyword: グレイシアVMAX SA|グレイシアVMAX HR
             exclude_keyword: 名:スリーブ,名:スリープ,手描き,手書き,名:イラスト,未開封,BOX,ディスプレイ,フレーム,鑑賞用,セット,デッキパーツ,名:PSA,英語版,韓国語版,中国語版,海外版,まとめ売り,ジャンク,2枚,3枚,4枚,5枚,10枚,20枚,5パック,10パック,福袋,構築済みデッキ,デッキ,旧裏,おまけ,2P,3P,4P,5P,詰め合わせ,ロット,メモ帳,ステッカー,展示用,特典,ブレンダ,番号:091/069,下限B:56000,下限A:56000
