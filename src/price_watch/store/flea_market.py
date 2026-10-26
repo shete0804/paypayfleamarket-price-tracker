@@ -423,6 +423,18 @@ def check(
     # 「番号119」は、カード番号「119/...」の商品も合格にする指定（SA の文字がなくても、同じカードを取れるように）
     card_numbers = [t[2:] for t in exclude_terms if t.startswith("番号") and not t.startswith("番号:")]
     exclude_terms = [t for t in exclude_terms if not t.startswith("番号") or t.startswith("番号:")]
+    # 「SA番号:101/095」：SR 系の SA 版。SA の表記がある出品か、SA の番号が名前にある出品だけ残す（通常の SR を外す）
+    sa_numbers = [t[len("SA番号:") :] for t in exclude_terms if t.startswith("SA番号:")]
+    exclude_terms = [t for t in exclude_terms if not t.startswith("SA番号:")]
+    if sa_numbers:
+        before_sr = len(filtered_results)
+        sa_word = re.compile(r"(?<![A-Za-z])SA(?![A-Za-z])|スペシャルアート", re.IGNORECASE)
+        filtered_results = [
+            r for r in filtered_results
+            if sa_word.search(r.name) or any(n in r.name for n in sa_numbers) or r.url in hr_urls
+        ]
+        if len(filtered_results) < before_sr:
+            logging.info("[%s] %s: SA 版でない商品を除外 (%d件 -> %d件)", label, item.name, before_sr, len(filtered_results))
     # 「SA必須」は 2 段階目では見ない（検索語の「X SA」で、SA の表記は 1 段階目で確かめている）
     if "SA必須" in exclude_terms:
         exclude_terms.remove("SA必須")
