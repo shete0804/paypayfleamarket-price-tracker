@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """フリマ検索（メルカリ・ラクマ・PayPayフリマ）による価格チェック."""
 
 from __future__ import annotations
