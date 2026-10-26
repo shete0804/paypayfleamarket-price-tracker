@@ -7,6 +7,10 @@ on:
         description: "動かすグループ（1 か 2）"
         required: false
         default: "1"
+      card:
+        description: "テスト：1枚だけ動かすときのカード名（空なら グループ全体）"
+        required: false
+        default: ""
   push:
     branches:
       - master
@@ -98,8 +102,14 @@ jobs:
 
       - name: Choose target group
         id: group
+        env:
+          CARD: ${{ inputs.card }}
         run: |
-          if [ "${{ inputs.group }}" = "2" ] || [ "${{ github.event.schedule }}" = "20,50 * * * *" ]; then
+          if [ -n "$CARD" ]; then
+            # テスト：そのカードの項目だけを書いた target_test.yaml を作る
+            awk -v n="$CARD" 'BEGIN{h=1; p=0} /^item_list:/{h=0; print; next} h{print; next} /^    - name: /{p=(substr($0,13)==n)} p{print}' target.yaml > target_test.yaml
+            echo "target=target_test.yaml" >> "$GITHUB_OUTPUT"
+          elif [ "${{ inputs.group }}" = "2" ] || [ "${{ github.event.schedule }}" = "20,50 * * * *" ]; then
             echo "target=target_g2.yaml" >> "$GITHUB_OUTPUT"
           else
             echo "target=target_g1.yaml" >> "$GITHUB_OUTPUT"
