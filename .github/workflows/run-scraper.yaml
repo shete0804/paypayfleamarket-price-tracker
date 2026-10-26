@@ -1,4 +1,4 @@
-name: Run Scraper
+﻿name: Run Scraper
 
 on:
   workflow_dispatch:
@@ -8,7 +8,9 @@ on:
     paths-ignore:
       - "results/**"
   schedule:
-    - cron: "7,22,37,52 * * * *"
+    # グループ1（5分と35分）と グループ2（20分と50分）。1時間に4回、交互に動く
+    - cron: "5,35 * * * *"
+    - cron: "20,50 * * * *"
 
 # 1回が約11分かかるので、実行が重ならないように1つずつ順番に動かす（実行中のものは止めない）
 concurrency:
@@ -17,7 +19,7 @@ concurrency:
 
 jobs:
   scrape:
-    timeout-minutes: 20
+    timeout-minutes: 45
     runs-on: ubuntu-latest
 
     permissions:
@@ -89,14 +91,23 @@ jobs:
               password_hash: "$argon2id$v=19$m=65536,t=3,p=4$G3sQ/+Jkh/ufAWCJDUTaPw$8wl44G3QrQysWT9mIDLD3bf0fLn0o/RO1EnYVVovyLs"
           EOF
 
+      - name: Choose target group
+        id: group
+        run: |
+          if [ "${{ github.event.schedule }}" = "20,50 * * * *" ]; then
+            echo "target=target_g2.yaml" >> "$GITHUB_OUTPUT"
+          else
+            echo "target=target_g1.yaml" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run Price Watch (Dry Run)
         working-directory: ${{ github.workspace }}
         env:
           PYTHONFAULTHANDLER: "1"
         run: |
-          timeout -s ABRT -k 60 900 uv run price-watch \
+          timeout -s ABRT -k 60 2400 uv run price-watch \
             -c /tmp/config.yaml \
-            -t target.yaml \
+            -t ${{ steps.group.outputs.target }} \
           2>&1 | tee scraper-output.log || true
 
       - name: Show Output
@@ -124,7 +135,7 @@ jobs:
       - name: Export results CSV
         if: always()
         run: |
-          uv run python export_csv.py || echo "CSV の書き出しに失敗しました"
+          uv run python export_csv.py ${{ steps.group.outputs.target }} || echo "CSV の書き出しに失敗しました"
 
       - name: Commit results CSV
         if: always()
@@ -149,3 +160,4 @@ jobs:
           path: |
             scraper-output.log
             data/price/price.db
+
