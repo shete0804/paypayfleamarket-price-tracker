@@ -196,6 +196,9 @@ def _is_recent_listing(text: str, days: int = 30) -> bool:
     m = _re.search(r"(\d+)\s*日前に更新", text)
     if m:
         return int(m.group(1)) <= days
+    m = _re.search(r"(\d+)\s*週間前に更新", text)
+    if m:
+        return int(m.group(1)) * 7 <= days
     if _re.search(r"\d+\s*(か月|ヶ月)前に更新", text):
         return False
     m = _re.search(r"出品日時[：:]\s*(\d{4})年(\d{1,2})月(\d{1,2})日", text)
