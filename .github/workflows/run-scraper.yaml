@@ -21,14 +21,14 @@ on:
     - cron: "5,35 * * * *"
     - cron: "20,50 * * * *"
 
-# 1回が約11分かかるので、実行が重ならないように1つずつ順番に動かす（実行中のものは止めない）
+# 1回が約11分かかるので実行を1つずつ動かす。止まった実行が後続を待たせないよう、新しい実行が古い方を止める
 concurrency:
   group: run-scraper
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   scrape:
-    timeout-minutes: 45
+    timeout-minutes: 20
     runs-on: ubuntu-latest
 
     permissions:
@@ -120,10 +120,10 @@ jobs:
         env:
           PYTHONFAULTHANDLER: "1"
         run: |
-          timeout -s ABRT -k 60 2400 uv run price-watch \
+          timeout -s ABRT -k 60 900 uv run price-watch \
             -c /tmp/config.yaml \
             -t ${{ steps.group.outputs.target }} \
-          2>&1 | tee scraper-output.log || true
+            > scraper-output.log 2>&1 || true
 
       - name: Show Output
         run: |
