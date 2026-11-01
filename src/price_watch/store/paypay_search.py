@@ -45,7 +45,7 @@ def build_search_url(condition: my_lib.store.flea_market.SearchCondition) -> str
             continue
         keyword = f"{keyword} -{exclude_kw}"
 
-    url = f"{_SEARCH_BASE_URL}/{urllib.parse.quote(keyword)}"
+    url = f"{_SEARCH_BASE_URL}/{urllib.parse.quote(keyword, safe='')}"
 
     params: dict[str, str] = {"sort": "price", "order": "asc", "withSpeller": "0"}
     # 「新着:1」の検索は、新着順（出品が新しい順）で読む
