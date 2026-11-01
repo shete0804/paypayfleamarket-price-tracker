@@ -450,7 +450,7 @@ def check(
         def _number_ok(name: str) -> bool:
             if any(re.search(rf"(?<!\d){re.escape(n)}(?!\d)", name) for n in target_numbers):
                 return True
-            return re.search(r"\d{1,3}/\d{2,3}", name) is None
+            return re.search(r"\d{1,3}/(?:\d{2,3}|[A-Z]{1,3}-[A-Z])(?![A-Za-z])", name) is None
 
         before_number = len(filtered_results)
         filtered_results = [r for r in filtered_results if _number_ok(r.name)]
