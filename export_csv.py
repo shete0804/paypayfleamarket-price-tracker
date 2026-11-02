@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """最新の上位3件（top3_history の最新分）を results/paypay.csv に書き出す.
 
 スプレッドシートの IMPORTDATA で読むためのファイル。対象のカードを全部並べ、結果がないカードは「該当なし」。
@@ -17,13 +17,7 @@ OUT_PATH = pathlib.Path("./results/paypay.csv")
 JST = timezone(timedelta(hours=9))
 
 # メルカリ版と同じ名前で並べられるように、共通の短い名前に直す（同じカードを同じ行に並べるため）
-LABELS = {
-    "メガリザードンYex スタートデッキ100": "メガリザードンYex MUR",
-    "メガリザードンXex SAR インフェルノX": "メガリザードンXex SAR",
-    "ギラティナV SA ロストアビス": "ギラティナV SA",
-    "メガレックウザex MUR ストームエメラルダ": "メガレックウザex MUR",
-    "ピカチュウex スタートデッキ100": "ピカチュウex",
-}
+LABELS = {}  # 表示名は設定ファイルの名前をそのまま使う（名前の統一）
 
 
 def group_labels(target_path: pathlib.Path) -> set[str]:
