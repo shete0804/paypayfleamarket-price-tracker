@@ -23,7 +23,7 @@ on:
 # 1回が約11分かかるので実行を1つずつ動かす。止まった実行が後続を待たせないよう、新しい実行が古い方を止める
 concurrency:
   group: run-scraper
-  cancel-in-progress: false  # 一時変更：グループ2の手動実行を通すため（後で true に戻す）
+  cancel-in-progress: true
 
 jobs:
   scrape:
