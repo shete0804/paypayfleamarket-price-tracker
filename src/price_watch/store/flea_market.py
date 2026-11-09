@@ -346,7 +346,6 @@ def check(
 
     exclude_terms = price_watch.store.paypay_search.split_exclude_keywords(condition.exclude_keyword)
 
-    # 「説明:SAR」の指定：名前にレア度がない出品は、商品ページの説明文に SAR と書いてあるかを確かめて、あれば合格にする
     # 「必須:○○」：商品名に ○○ が含まれるものだけを残す（スクレイプでは通して、ここで落とす二次フィルター）
     required_terms = [t[len("必須:") :] for t in exclude_terms if t.startswith("必須:")]
     exclude_terms = [t for t in exclude_terms if not t.startswith("必須:")]
@@ -362,37 +361,6 @@ def check(
                 before_required,
                 len(filtered_results),
             )
-
-    description_terms = [t[len("説明:") :] for t in exclude_terms if t.startswith("説明:")]
-    exclude_terms = [t for t in exclude_terms if not t.startswith("説明:")]
-    # 「下限:40000」：説明文の確認の対象（名前にレア度がない候補）の、値段の下限
-    description_floors = [int(t[len("下限:") :]) for t in exclude_terms if t.startswith("下限:")]
-    exclude_terms = [t for t in exclude_terms if not t.startswith("下限:")]
-    if description_terms:
-        name_rarity = re.compile(r"(?<![A-Za-z])(SA|SAR|SR|UR|MUR|RR|RRR|AR|HR|CSR|SSR|BWR|CHR|S|A)(?![A-Za-z])")
-        description_floor = max(description_floors, default=0)
-        candidates = sorted(
-            [r for r in filtered_results if not name_rarity.search(r.name) and r.price >= description_floor],
-            key=lambda r: r.price,
-        )[:10]
-        passed_urls: set[str] = set()
-        for cand in candidates:
-            page.goto(cand.url)
-            description = page.evaluate("document.body.innerText") or ""
-            if any(f"[{term}]" in description for term in description_terms):
-                passed_urls.add(cand.url)
-        before_description = len(filtered_results)
-        filtered_results = [
-            r for r in filtered_results if any(term in r.name for term in description_terms) or r.url in passed_urls
-        ]
-        logging.info(
-            "[%s] %s: 名前にレア度がない商品 %d 件を商品ページで確認 (%d件 -> %d件)",
-            label,
-            item.name,
-            len(candidates),
-            before_description,
-            len(filtered_results),
-        )
 
     if "レア度必須" in exclude_terms:
         exclude_terms.remove("レア度必須")
