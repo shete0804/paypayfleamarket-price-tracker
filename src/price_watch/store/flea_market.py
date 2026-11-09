@@ -294,21 +294,6 @@ def check(
                 if kw.upper().endswith(" HR"):
                     hr_urls.add(r.url)
 
-    # 新着順の検索（新しく出た出品を取りこぼさないため、NEW_ARRIVAL_RESULTS 件）
-    if keywords:
-        new_condition = dataclasses.replace(
-            condition,
-            keyword=keywords[0],
-            exclude_keyword=",".join(filter(None, [condition.exclude_keyword, "新着:1"])),
-            price_min=first_price_min,
-        )
-        new_results = search_func(page, new_condition, max_items=NEW_ARRIVAL_RESULTS, scroll_to_load=False)
-        logging.info("[%s] %s: 新着順の検索で %d 件取得", label, item.name, len(new_results))
-        for r in new_results:
-            if price_watch.store.search_filter.matches_all_keywords(r.name, keywords[0]) and r.url not in seen_urls:
-                seen_urls.add(r.url)
-                results.append(r)
-
     # item_key 生成用のデータを設定
     result.search_keyword = condition.keyword
     result.search_cond = _build_search_cond_json(condition)

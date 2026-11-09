@@ -41,17 +41,13 @@ def build_search_url(condition: my_lib.store.flea_market.SearchCondition) -> str
     keyword = condition.keyword
     for exclude_kw in split_exclude_keywords(condition.exclude_keyword):
         # 「名:」で始まる除外語は、商品名だけで判定する（検索のURLには入れない。説明文の言葉で消えるのを防ぐ）
-        if exclude_kw.startswith(("名:", "番号:", "SA番号:", "説明:", "下限:", "下限A:", "下限B:", "下限C:", "必須:", "新着:")):
+        if exclude_kw.startswith(("名:", "番号:", "SA番号:", "説明:", "下限:", "下限A:", "下限B:", "下限C:", "必須:")):
             continue
         keyword = f"{keyword} -{exclude_kw}"
 
     url = f"{_SEARCH_BASE_URL}/{urllib.parse.quote(keyword, safe='')}"
 
     params: dict[str, str] = {"sort": "price", "order": "asc", "withSpeller": "0"}
-    # 「新着:1」の検索は、新着順（出品が新しい順）で読む
-    if "新着:1" in split_exclude_keywords(condition.exclude_keyword):
-        params = {"sort": "openTime", "order": "desc", "withSpeller": "0"}
-
     if condition.sale_status == my_lib.store.flea_market.SaleStatus.ON_SALE:
         params["open"] = "1"
     elif condition.sale_status == my_lib.store.flea_market.SaleStatus.SOLD_OUT:
@@ -80,7 +76,7 @@ def _wait_for_search_results(page: Page) -> bool:
         logging.warning("[PayPay] 読み込みタイムアウト")
         raise
 
-    time.sleep(2)
+    time.sleep(1)
 
     if page.exists(Xpath(_NO_RESULT_XPATH), visible=False):
         logging.info("[PayPay] 該当なし")
@@ -180,7 +176,7 @@ def search(
         previous_count = len(item_elements)
         page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         item_elements[-1].scroll_into_view()
-        time.sleep(2)
+        time.sleep(1)
         item_elements = page.find_all(Xpath(_ITEM_LIST_XPATH))
         stalled_count = stalled_count + 1 if len(item_elements) == previous_count else 0
     logging.info("[PayPay] 画面上の商品リンク数: %d", len(item_elements))
