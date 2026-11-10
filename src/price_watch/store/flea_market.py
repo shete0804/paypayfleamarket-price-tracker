@@ -184,33 +184,46 @@ def _required_ok(name: str, req: str) -> bool:
     return price_watch.store.search_filter.normalize_name(req) in price_watch.store.search_filter.normalize_name(name)
 
 
-def _is_recent_listing(text: str, days: int = 30) -> bool:
-    """商品ページの文から、最終更新が直近 days 日以内かを判定する（「◯日前に更新」「出品日時」）。"""
+def _now_jst():
+    import datetime as _dt
+
+    return _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=9)))
+
+
+def _listing_date(text: str, now) -> "object | None":
+    """商品ページの文から、出品日（または最終更新日）を推定する。読めなければ None。"""
     import datetime as _dt
     import re as _re
 
-    if _re.search(r"\d+\s*(時間|分)前に更新", text):
-        return True
+    m = _re.search(r"(\d+)\s*時間前に更新", text)
+    if m:
+        return now - _dt.timedelta(hours=int(m.group(1)))
+    m = _re.search(r"(\d+)\s*分前に更新", text)
+    if m:
+        return now - _dt.timedelta(minutes=int(m.group(1)))
     m = _re.search(r"(\d+)\s*日前に更新", text)
     if m:
-        return int(m.group(1)) <= days
+        return now - _dt.timedelta(days=int(m.group(1)))
     m = _re.search(r"(\d+)\s*週間前に更新", text)
     if m:
-        return int(m.group(1)) * 7 <= days
-    if _re.search(r"\d+\s*(か月|ヶ月)前に更新", text):
-        return False
+        return now - _dt.timedelta(days=7 * int(m.group(1)))
+    # 「○か月前」は 30 日を超えるので、少し多めに見ておく（直近の判定には入らない）
+    m = _re.search(r"(\d+)\s*(か月|ヶ月)前に更新", text)
+    if m:
+        return now - _dt.timedelta(days=31 * int(m.group(1)))
     m = _re.search(r"出品日時[：:]\s*(\d{4})年(\d{1,2})月(\d{1,2})日", text)
     if m:
-        jst = _dt.timezone(_dt.timedelta(hours=9))
-        listed = _dt.datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)), tzinfo=jst)
-        return listed >= _dt.datetime.now(jst) - _dt.timedelta(days=days)
-    return False
+        return _dt.datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)), tzinfo=now.tzinfo)
+    return None
 
 
-def _recent_by_http(url: str) -> bool | None:
-    """商品ページを HTTP で読んで、直近30日以内かを判定する。
+_GONE = "GONE"  # 商品ページが無い（削除済み）
 
-    削除済み（404）は False。出品日時が読めないときは None を返し、呼び出し側がブラウザで確かめる。
+
+def _fetch_listing_date_http(url: str):
+    """商品ページを HTTP で読んで、出品日（または最終更新日）を返す。
+
+    削除済み（404）は _GONE、読めなければ None（呼び出し側がブラウザで確かめる）。
     """
     import html as _html
     import re as _re
@@ -222,13 +235,46 @@ def _recent_by_http(url: str) -> bool | None:
         with urllib.request.urlopen(req, timeout=15) as res:
             body = res.read().decode("utf-8", errors="ignore")
     except urllib.error.HTTPError as e:
-        return False if e.code == 404 else None
+        return _GONE if e.code == 404 else None
     except Exception:
         return None
     text = _html.unescape(_re.sub(r"<[^>]+>", "\n", body))
-    if "出品日時" not in text:
-        return None
-    return _is_recent_listing(text)
+    return _listing_date(text, _now_jst())
+
+
+_LISTING_DATES_PATH = "data/listing_dates.json"
+_LISTING_DATES_KEEP_DAYS = 90
+
+
+def _load_listing_dates() -> dict:
+    """URL → 出品日（ISO 形式）の記録を読む。無ければ空。"""
+    import json
+    import os
+
+    if not os.path.exists(_LISTING_DATES_PATH):
+        return {}
+    try:
+        with open(_LISTING_DATES_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        logging.warning("[PayPay] 出品日の記録が読めないため、空から始める")
+        return {}
+
+
+def _save_listing_dates(records: dict) -> None:
+    """記録を書く。90 日より前の出品は捨てる（候補に出なくなったもの）。"""
+    import datetime as _dt
+    import json
+    import os
+
+    cutoff = _now_jst() - _dt.timedelta(days=_LISTING_DATES_KEEP_DAYS)
+    kept = {
+        url: v for url, v in records.items()
+        if _dt.datetime.fromisoformat(v) >= cutoff
+    }
+    os.makedirs(os.path.dirname(_LISTING_DATES_PATH), exist_ok=True)
+    with open(_LISTING_DATES_PATH, "w", encoding="utf-8") as f:
+        json.dump(kept, f, ensure_ascii=False, indent=0)
 
 
 def _get_store_label(item: ResolvedItem) -> str:
@@ -479,18 +525,30 @@ def check(
     if detail_url and ' ' in detail_url:
         detail_url = detail_url.split(' ')[0]
 
-    # 最終更新日が直近30日以内の出品だけを残す（安い順に商品ページを開いて確かめ、5件そろうまで。最大15件）
+    # 直近30日以内の出品だけを残す（安い順に候補を見て、5件そろうまで。最大15件）
+    # 出品日は記録（data/listing_dates.json）から計算する。記録がない候補だけ商品ページを読む
+    import datetime as _dt
+
+    now = _now_jst()
+    listing_dates = _load_listing_dates()
     recent_results = []
     for cand in sorted(filtered_results, key=lambda r: r.price)[:15]:
         if len(recent_results) >= 5:
             break
-        # ブラウザを使わず HTTP で商品ページを読む（速い）。読めなければブラウザで確かめる
-        recent = _recent_by_http(cand.url)
-        if recent is None:
-            page.goto(cand.url)
-            recent = _is_recent_listing(page.evaluate("document.body.innerText") or "")
-        if recent:
+        if cand.url not in listing_dates:
+            fetched = _fetch_listing_date_http(cand.url)
+            if fetched is None:
+                # HTTP で読めなければ、ブラウザで確かめる
+                page.goto(cand.url)
+                fetched = _listing_date(page.evaluate("document.body.innerText") or "", now)
+            if fetched == _GONE:
+                fetched = now - _dt.timedelta(days=31)  # 削除済みは「直近ではない」日付として記録する（90日で捨てられる）
+            if fetched is not None:
+                listing_dates[cand.url] = fetched.isoformat()
+        recorded = listing_dates.get(cand.url)
+        if recorded is not None and now - _dt.datetime.fromisoformat(recorded) <= _dt.timedelta(days=30):
             recent_results.append(cand)
+    _save_listing_dates(listing_dates)
     logging.info(
         "[%s] %s: 直近30日以内の出品 %d 件（候補 %d 件から）", label, item.name, len(recent_results), len(filtered_results)
     )

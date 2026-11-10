@@ -114,6 +114,15 @@ jobs:
             echo "target=target_g1.yaml" >> "$GITHUB_OUTPUT"
           fi
 
+      # 出品日の記録（商品ページを読まずに直近30日を判定するため）を、前回の実行から引き継ぐ
+      - name: Restore listing dates
+        uses: actions/cache/restore@v4
+        with:
+          path: data/listing_dates.json
+          key: listing-dates-${{ github.run_id }}
+          restore-keys: |
+            listing-dates-
+
       - name: Run Price Watch (Dry Run)
         working-directory: ${{ github.workspace }}
         env:
@@ -123,6 +132,13 @@ jobs:
             -c /tmp/config.yaml \
             -t ${{ steps.group.outputs.target }} \
             > scraper-output.log 2>&1 || true
+
+      - name: Save listing dates
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/listing_dates.json
+          key: listing-dates-${{ github.run_id }}
 
       - name: Show Output
         run: |
