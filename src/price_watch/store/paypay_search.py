@@ -171,10 +171,12 @@ def _http_search_results(condition: my_lib.store.flea_market.SearchCondition) ->
             html = res.read().decode("utf-8", errors="ignore")
         m = re.search(r"var pageData =(\{.*?\});\s*</script>", html, re.S)
         if not m:
+            logging.warning("[PayPay] HTTP の検索: pageData が無い（HTML %d 文字、冒頭 %r）", len(html), html[:120])
             return []
         items = json.loads(m.group(1)).get("items", [])
-    except Exception:  # noqa: BLE001 - 補助の取得なので、失敗しても本処理は続ける
-        logging.warning("[PayPay] HTTP の検索に失敗（ブラウザの結果だけを使う）")
+        logging.info("[PayPay] HTTP の検索: %d 件", len(items))
+    except Exception as err:  # noqa: BLE001 - 補助の取得なので、失敗しても本処理は続ける
+        logging.warning("[PayPay] HTTP の検索に失敗（ブラウザの結果だけを使う）: %s", err)
         return []
     results = []
     for it in items:
