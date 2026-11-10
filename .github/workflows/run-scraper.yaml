@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       group:
-        description: "動かすグループ（1 か 2）"
+        description: "動かすグループ（1〜4）"
         required: false
         default: "1"
       card:
@@ -19,6 +19,8 @@ on:
   schedule:
     - cron: "0 */2 * * *"
     - cron: "30 */2 * * *"
+    - cron: "0 1-23/2 * * *"
+    - cron: "30 1-23/2 * * *"
 
 # 1回が約11〜17分かかるので実行を1つずつ動かす。動いている実行は止めず、後から来た実行は順番待ちにする（PC の実行と GitHub の定期実行が重なっても、お互いを潰さない）
 concurrency:
@@ -108,10 +110,17 @@ jobs:
             # テスト：そのカードの項目だけを書いた target_test.yaml を作る
             awk -v n="$CARD" 'BEGIN{h=1; p=0} /^item_list:/{h=0; print; next} h{print; next} /^    - name: /{p=(substr($0,13)==n)} p{print}' target.yaml > target_test.yaml
             echo "target=target_test.yaml" >> "$GITHUB_OUTPUT"
-          elif [ "${{ inputs.group }}" = "2" ] || [ "${{ github.event.schedule }}" = "30 */2 * * *" ]; then
-            echo "target=target_g2.yaml" >> "$GITHUB_OUTPUT"
           else
-            echo "target=target_g1.yaml" >> "$GITHUB_OUTPUT"
+            # 定期実行は、時刻でグループを決める（2時間ごとに 4 グループを 30 分ずつずらす）
+            case "${{ github.event.schedule }}" in
+              "0 */2 * * *") G=1 ;;
+              "30 */2 * * *") G=2 ;;
+              "0 1-23/2 * * *") G=3 ;;
+              "30 1-23/2 * * *") G=4 ;;
+              *) G="${{ inputs.group }}" ;;
+            esac
+            [ -n "$G" ] || G=1
+            echo "target=target_g${G}.yaml" >> "$GITHUB_OUTPUT"
           fi
 
       # 出品日の記録（商品ページを読まずに直近30日を判定するため）を、前回の実行から引き継ぐ

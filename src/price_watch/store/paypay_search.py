@@ -155,6 +155,10 @@ def _parse_search_item(item_element: Element) -> my_lib.store.flea_market.Search
         return None
 
 
+# 検索 1 回ごとの待ち時間（秒）。短い時間に集中すると PayPay が制限する（429）
+SEARCH_GAP_SEC = 8
+
+
 def search(
     page: Page,
     condition: my_lib.store.flea_market.SearchCondition,
@@ -166,6 +170,8 @@ def search(
     logging.info("[PayPay] 検索開始: keyword=%s", condition.keyword)
     logging.debug("[PayPay] 検索URL: %s", url)
 
+    # 連続アクセスで PayPay に制限（429）されないよう、検索の間隔をあける
+    time.sleep(SEARCH_GAP_SEC)
     page.goto(url)
     logging.info("[PayPay] 到着URL: %s", page.url)
 

@@ -123,6 +123,7 @@ testem.log
 !*.example.yaml
 !.github/*/*.yaml
 !target.yaml
+!target_g*.yaml
 
 # =============================================================================
 # Project specific - data directories

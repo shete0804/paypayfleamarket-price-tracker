@@ -7,6 +7,7 @@ import dataclasses
 import json
 import logging
 import re
+import time
 from typing import TYPE_CHECKING, Any
 
 import my_lib.store.flea_market
@@ -218,6 +219,10 @@ def _listing_date(text: str, now) -> "object | None":
 
 
 _GONE = "GONE"  # 商品ページが無い（削除済み）
+
+
+# 商品ページ 1 件ごとの待ち時間（秒）
+PRODUCT_FETCH_GAP_SEC = 4
 
 
 def _fetch_listing_date_http(url: str):
@@ -539,6 +544,8 @@ def check(
         if cand.url in listing_dates:
             n_record += 1
         else:
+            # 商品ページの読み込みも間隔をあける（連続アクセスで PayPay に制限されないように）
+            time.sleep(PRODUCT_FETCH_GAP_SEC)
             fetched = _fetch_listing_date_http(cand.url)
             n_http += 1
             if fetched is None:
