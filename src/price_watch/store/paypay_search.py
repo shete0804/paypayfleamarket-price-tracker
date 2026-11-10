@@ -4,12 +4,10 @@
 from __future__ import annotations
 
 import contextlib
-import json
 import logging
 import re
 import time
 import urllib.parse
-import urllib.request
 
 import my_lib.browser
 import my_lib.store.flea_market
@@ -161,40 +159,6 @@ def _parse_search_item(item_element: Element) -> my_lib.store.flea_market.Search
 SEARCH_GAP_SEC = 8
 
 
-
-def _http_search_results(condition: my_lib.store.flea_market.SearchCondition) -> list[my_lib.store.flea_market.SearchResult]:
-    """同じ検索条件を HTTP で読む（ブラウザの検索結果に出ない出品を拾うため）。失敗したら空を返す。"""
-    url = build_search_url(condition)
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=30) as res:
-            html = res.read().decode("utf-8", errors="ignore")
-        m = re.search(r"var pageData =(\{.*?\});\s*</script>", html, re.S)
-        if not m:
-            return []
-        items = json.loads(m.group(1)).get("items", [])
-    except Exception:  # noqa: BLE001 - 補助の取得なので、失敗しても本処理は続ける
-        logging.warning("[PayPay] HTTP の検索に失敗（ブラウザの結果だけを使う）")
-        return []
-    results = []
-    for it in items:
-        pid = it.get("productID")
-        if not pid:
-            continue
-        try:
-            price = int(it.get("price") or 0)
-        except ValueError:
-            continue
-        results.append(
-            my_lib.store.flea_market.SearchResult(
-                name=it.get("productName", ""),
-                url=f"https://paypayfleamarket.yahoo.co.jp/item/{pid}",
-                price=price,
-                thumb_url=None,
-            )
-        )
-    return results
-
 def search(
     page: Page,
     condition: my_lib.store.flea_market.SearchCondition,
@@ -253,19 +217,6 @@ def search(
         if result is not None and result.url not in parsed_urls:
             results.append(result)
             parsed_urls.add(result.url)
-
-    # ブラウザの結果に無い出品（PayPay の検索結果がブラウザと HTTP で一部違うため）を、HTTP の結果から足す
-    time.sleep(SEARCH_GAP_SEC)
-    added = 0
-    for extra in _http_search_results(condition):
-        if extra.url in parsed_urls:
-            continue
-        if max_items is not None and len(results) >= max_items:
-            break
-        results.append(extra)
-        parsed_urls.add(extra.url)
-        added += 1
-    logging.info("[PayPay] HTTP の結果から追加: %d 件", added)
 
     logging.info("[PayPay] 検索完了: %d 件", len(results))
     logging.info("[PayPay] 取得順の価格: %s", [r.price for r in results])
