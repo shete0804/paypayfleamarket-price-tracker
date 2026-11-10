@@ -74,6 +74,12 @@ def _wait_for_search_results(page: Page) -> bool:
         page.wait_visible(Xpath("//main | //div[@id='root']//ul"))
     except my_lib.browser.WaitTimeoutError:
         logging.warning("[PayPay] 読み込みタイムアウト")
+        # 原因の切り分け用：止まったときのページの状態（タイトル・URL・本文の冒頭）を残す
+        try:
+            body_head = page.evaluate("(document.body ? document.body.innerText : '').slice(0, 200)")
+            logging.warning("[PayPay] タイムアウト時の状態: title=%s url=%s 本文冒頭=%r", page.title(), page.url, body_head)
+        except Exception:  # noqa: BLE001  診断情報の取得失敗で本処理を止めない
+            logging.warning("[PayPay] タイムアウト時の状態を取得できませんでした")
         raise
 
     time.sleep(1)
