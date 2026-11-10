@@ -532,14 +532,19 @@ def check(
     now = _now_jst()
     listing_dates = _load_listing_dates()
     recent_results = []
+    n_record = n_http = n_browser = 0
     for cand in sorted(filtered_results, key=lambda r: r.price)[:15]:
         if len(recent_results) >= 5:
             break
-        if cand.url not in listing_dates:
+        if cand.url in listing_dates:
+            n_record += 1
+        else:
             fetched = _fetch_listing_date_http(cand.url)
+            n_http += 1
             if fetched is None:
                 # HTTP で読めなければ、ブラウザで確かめる
                 page.goto(cand.url)
+                n_browser += 1
                 fetched = _listing_date(page.evaluate("document.body.innerText") or "", now)
             if fetched == _GONE:
                 fetched = now - _dt.timedelta(days=31)  # 削除済みは「直近ではない」日付として記録する（90日で捨てられる）
@@ -549,6 +554,7 @@ def check(
         if recorded is not None and now - _dt.datetime.fromisoformat(recorded) <= _dt.timedelta(days=30):
             recent_results.append(cand)
     _save_listing_dates(listing_dates)
+    logging.info("[%s] %s: 直近判定の内訳 記録から %d 件 / 商品ページ（HTTP）%d 件 / ブラウザ %d 件", label, item.name, n_record, n_http, n_browser)
     logging.info(
         "[%s] %s: 直近30日以内の出品 %d 件（候補 %d 件から）", label, item.name, len(recent_results), len(filtered_results)
     )
