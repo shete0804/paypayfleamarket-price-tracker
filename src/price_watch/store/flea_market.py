@@ -33,8 +33,6 @@ if TYPE_CHECKING:
 MAX_SEARCH_RESULTS = 40
 # 2つ目以降の検索語で読む件数（SA と HR の別々の検索を、どちらも同じ件数で読むため 40 件）
 NAME_ONLY_SEARCH_RESULTS = 40
-# 新着順の検索の件数（新しく出た出品を取りこぼさないため）
-NEW_ARRIVAL_RESULTS = 10
 
 # ストアごとの検索関数とログ表示名
 _STORE_SEARCH_FUNCS: dict[
@@ -207,6 +205,30 @@ def _is_recent_listing(text: str, days: int = 30) -> bool:
         listed = _dt.datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)), tzinfo=jst)
         return listed >= _dt.datetime.now(jst) - _dt.timedelta(days=days)
     return False
+
+
+def _recent_by_http(url: str) -> bool | None:
+    """商品ページを HTTP で読んで、直近30日以内かを判定する。
+
+    削除済み（404）は False。出品日時が読めないときは None を返し、呼び出し側がブラウザで確かめる。
+    """
+    import html as _html
+    import re as _re
+    import urllib.error
+    import urllib.request
+
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as res:
+            body = res.read().decode("utf-8", errors="ignore")
+    except urllib.error.HTTPError as e:
+        return False if e.code == 404 else None
+    except Exception:
+        return None
+    text = _html.unescape(_re.sub(r"<[^>]+>", "\n", body))
+    if "出品日時" not in text:
+        return None
+    return _is_recent_listing(text)
 
 
 def _get_store_label(item: ResolvedItem) -> str:
@@ -462,8 +484,12 @@ def check(
     for cand in sorted(filtered_results, key=lambda r: r.price)[:15]:
         if len(recent_results) >= 5:
             break
-        page.goto(cand.url)
-        if _is_recent_listing(page.evaluate("document.body.innerText") or ""):
+        # ブラウザを使わず HTTP で商品ページを読む（速い）。読めなければブラウザで確かめる
+        recent = _recent_by_http(cand.url)
+        if recent is None:
+            page.goto(cand.url)
+            recent = _is_recent_listing(page.evaluate("document.body.innerText") or "")
+        if recent:
             recent_results.append(cand)
     logging.info(
         "[%s] %s: 直近30日以内の出品 %d 件（候補 %d 件から）", label, item.name, len(recent_results), len(filtered_results)
