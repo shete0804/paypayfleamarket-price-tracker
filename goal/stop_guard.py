@@ -24,6 +24,7 @@ def open_items(text: str) -> list[str]:
 
 
 def main() -> int:
+    sys.stdout.reconfigure(encoding="utf-8")
     try:
         data = json.loads(sys.stdin.read() or "{}")
     except Exception:
