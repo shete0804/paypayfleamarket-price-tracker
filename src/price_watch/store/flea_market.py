@@ -360,6 +360,9 @@ def check(
         )
         logging.info("[%s] %s: 検索語「%s」で %d 件取得", label, item.name, kw, len(kw_results))
         for r in kw_results:
+            # 「ほか」が空白で区切られた1単語で入っている題名は、まとめ売りなので外す（部分一致ではなく単語で判定）
+            if any(tok == "ほか" for tok in re.split(r"[\s　]+", r.name)):
+                continue
             # 検索語ごとに、その検索語の言葉が名前にあるものだけを採用する（別の検索語の混入を防ぐ）
             if price_watch.store.search_filter.matches_all_keywords(r.name, kw) and r.url not in seen_urls:
                 seen_urls.add(r.url)
